@@ -1,0 +1,6 @@
+{
+  "name": "presentation",
+  "sdk": "go",
+  "source": ".",
+  "engineVersion": "v0.10.2"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "presentation",
+  "dependencies": {
+    "@asciidoctor/reveal.js": "^5",
+    "@camptocamp/reveal.js": "^5",
+    "@fortawesome/fontawesome-free": "^6",
+    "@highlightjs/cdn-assets": "^10",
+    "asciidoctor": "^3",
+    "asciidoctor-kroki": "^0.18"
+  },
+  "devDependencies": {
+    "parcel": "^2"
+  },
+  "scripts": {
+    "build": "npx asciidoctor-revealjs -r asciidoctor-kroki index.adoc",
+    "autobuild": "while inotifywait -e modify index.adoc docinfo-*.html -r diagrams; do npm run build; done",
+    "serve": "npx parcel serve index.html",
+    "bundle": "npx parcel build --public-url '.' index.html",
+    "all": "npm run build && npm run bundle"
+  }
+}
