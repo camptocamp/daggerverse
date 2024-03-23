@@ -17,7 +17,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
-	"dagger/presentation/internal/querybuilder"
+	"dagger/golang/internal/querybuilder"
 )
 
 // assertNotNil panic if the given value is nil.
@@ -108,9 +108,6 @@ func (e *ExecError) Unwrap() error {
 // The `CacheVolumeID` scalar type represents an identifier for an object of type CacheVolume.
 type CacheVolumeID string
 
-// The `CaddyID` scalar type represents an identifier for an object of type Caddy.
-type CaddyID string
-
 // The `ContainerID` scalar type represents an identifier for an object of type Container.
 type ContainerID string
 
@@ -162,9 +159,6 @@ type InterfaceTypeDefID string
 // An arbitrary JSON-encoded value.
 type JSON string
 
-// The `KrokiID` scalar type represents an identifier for an object of type Kroki.
-type KrokiID string
-
 // The `LabelID` scalar type represents an identifier for an object of type Label.
 type LabelID string
 
@@ -182,9 +176,6 @@ type ModuleID string
 
 // The `ModuleSourceID` scalar type represents an identifier for an object of type ModuleSource.
 type ModuleSourceID string
-
-// The `NodejsID` scalar type represents an identifier for an object of type Nodejs.
-type NodejsID string
 
 // The `ObjectTypeDefID` scalar type represents an identifier for an object of type ObjectTypeDef.
 type ObjectTypeDefID string
@@ -316,83 +307,6 @@ func (r *CacheVolume) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadCacheVolumeFromID(CacheVolumeID(id))
 	return nil
-}
-
-type Caddy struct {
-	query *querybuilder.Selection
-
-	id *CaddyID
-}
-
-func (r *Caddy) WithGraphQLQuery(q *querybuilder.Selection) *Caddy {
-	return &Caddy{
-		query: q,
-	}
-}
-
-func (r *Caddy) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Caddy.
-func (r *Caddy) ID(ctx context.Context) (CaddyID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response CaddyID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Caddy) XXX_GraphQLType() string {
-	return "Caddy"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Caddy) XXX_GraphQLIDType() string {
-	return "CaddyID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Caddy) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Caddy) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Caddy) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadCaddyFromID(CaddyID(id))
-	return nil
-}
-
-func (r *Caddy) Server() *Service {
-	q := r.query.Select("server")
-
-	return &Service{
-		query: q,
-	}
 }
 
 // An OCI-compatible container, also known as a Docker container.
@@ -3931,83 +3845,6 @@ func (r *InterfaceTypeDef) SourceModuleName(ctx context.Context) (string, error)
 	return response, q.Execute(ctx)
 }
 
-type Kroki struct {
-	query *querybuilder.Selection
-
-	id *KrokiID
-}
-
-func (r *Kroki) WithGraphQLQuery(q *querybuilder.Selection) *Kroki {
-	return &Kroki{
-		query: q,
-	}
-}
-
-func (r *Kroki) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Kroki.
-func (r *Kroki) ID(ctx context.Context) (KrokiID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response KrokiID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Kroki) XXX_GraphQLType() string {
-	return "Kroki"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Kroki) XXX_GraphQLIDType() string {
-	return "KrokiID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Kroki) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Kroki) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Kroki) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadKrokiFromID(KrokiID(id))
-	return nil
-}
-
-func (r *Kroki) Server() *Service {
-	q := r.query.Select("server")
-
-	return &Service{
-		query: q,
-	}
-}
-
 // A simple key value object that represents a label.
 type Label struct {
 	query *querybuilder.Selection
@@ -5019,85 +4856,6 @@ func (r *ModuleSource) WithSourceSubpath(path string) *ModuleSource {
 	}
 }
 
-type Nodejs struct {
-	query *querybuilder.Selection
-
-	id *NodejsID
-}
-
-func (r *Nodejs) WithGraphQLQuery(q *querybuilder.Selection) *Nodejs {
-	return &Nodejs{
-		query: q,
-	}
-}
-
-func (r *Nodejs) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
-func (r *Nodejs) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Nodejs.
-func (r *Nodejs) ID(ctx context.Context) (NodejsID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response NodejsID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Nodejs) XXX_GraphQLType() string {
-	return "Nodejs"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Nodejs) XXX_GraphQLIDType() string {
-	return "NodejsID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Nodejs) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Nodejs) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Nodejs) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadNodejsFromID(NodejsID(id))
-	return nil
-}
-
 // A definition of a custom object defined in a Module.
 type ObjectTypeDef struct {
 	query *querybuilder.Selection
@@ -5444,16 +5202,6 @@ func (r *Client) CacheVolume(key string) *CacheVolume {
 	}
 }
 
-func (r *Client) Caddy(directory *Directory) *Caddy {
-	assertNotNil("directory", directory)
-	q := r.query.Select("caddy")
-	q = q.Arg("directory", directory)
-
-	return &Caddy{
-		query: q,
-	}
-}
-
 // Checks if the current Dagger Engine is compatible with an SDK's required version.
 func (r *Client) CheckVersionCompatibility(ctx context.Context, version string) (bool, error) {
 	q := r.query.Select("checkVersionCompatibility")
@@ -5673,30 +5421,12 @@ func (r *Client) HTTP(url string, opts ...HTTPOpts) *File {
 	}
 }
 
-func (r *Client) Kroki() *Kroki {
-	q := r.query.Select("kroki")
-
-	return &Kroki{
-		query: q,
-	}
-}
-
 // Load a CacheVolume from its ID.
 func (r *Client) LoadCacheVolumeFromID(id CacheVolumeID) *CacheVolume {
 	q := r.query.Select("loadCacheVolumeFromID")
 	q = q.Arg("id", id)
 
 	return &CacheVolume{
-		query: q,
-	}
-}
-
-// Load a Caddy from its ID.
-func (r *Client) LoadCaddyFromID(id CaddyID) *Caddy {
-	q := r.query.Select("loadCaddyFromID")
-	q = q.Arg("id", id)
-
-	return &Caddy{
 		query: q,
 	}
 }
@@ -5861,16 +5591,6 @@ func (r *Client) LoadInterfaceTypeDefFromID(id InterfaceTypeDefID) *InterfaceTyp
 	}
 }
 
-// Load a Kroki from its ID.
-func (r *Client) LoadKrokiFromID(id KrokiID) *Kroki {
-	q := r.query.Select("loadKrokiFromID")
-	q = q.Arg("id", id)
-
-	return &Kroki{
-		query: q,
-	}
-}
-
 // Load a Label from its ID.
 func (r *Client) LoadLabelFromID(id LabelID) *Label {
 	q := r.query.Select("loadLabelFromID")
@@ -5927,16 +5647,6 @@ func (r *Client) LoadModuleSourceFromID(id ModuleSourceID) *ModuleSource {
 	q = q.Arg("id", id)
 
 	return &ModuleSource{
-		query: q,
-	}
-}
-
-// Load a Nodejs from its ID.
-func (r *Client) LoadNodejsFromID(id NodejsID) *Nodejs {
-	q := r.query.Select("loadNodejsFromID")
-	q = q.Arg("id", id)
-
-	return &Nodejs{
 		query: q,
 	}
 }
@@ -6091,25 +5801,6 @@ func (r *Client) ModuleSource(refString string, opts ...ModuleSourceOpts) *Modul
 	q = q.Arg("refString", refString)
 
 	return &ModuleSource{
-		query: q,
-	}
-}
-
-// NodejsOpts contains options for Client.Nodejs
-type NodejsOpts struct {
-	Npmrc *Secret
-}
-
-func (r *Client) Nodejs(opts ...NodejsOpts) *Nodejs {
-	q := r.query.Select("nodejs")
-	for i := len(opts) - 1; i >= 0; i-- {
-		// `npmrc` optional argument
-		if !querybuilder.IsZeroValue(opts[i].Npmrc) {
-			q = q.Arg("npmrc", opts[i].Npmrc)
-		}
-	}
-
-	return &Nodejs{
 		query: q,
 	}
 }

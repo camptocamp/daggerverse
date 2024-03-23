@@ -1,0 +1,9 @@
+---
+title: 'Explanation'
+icon: 'fas fa-lightbulb'
+description: |
+  Explanation is discussion that clarifies and illuminates a particular topic.
+
+  Explanation is understanding-oriented.
+weight: 4
+---

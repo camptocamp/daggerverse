@@ -1,5 +1,6 @@
 {
   "name": "presentation",
+  "private": true,
   "dependencies": {
     "@asciidoctor/reveal.js": "^5",
     "@camptocamp/reveal.js": "^5",

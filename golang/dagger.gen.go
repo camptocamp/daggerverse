@@ -4,7 +4,7 @@ package main
 
 import (
 	"context"
-	"dagger/presentation/internal/dagger"
+	"dagger/golang/internal/dagger"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -18,9 +18,6 @@ type ExecError = dagger.ExecError
 
 // The `CacheVolumeID` scalar type represents an identifier for an object of type CacheVolume.
 type CacheVolumeID = dagger.CacheVolumeID
-
-// The `CaddyID` scalar type represents an identifier for an object of type Caddy.
-type CaddyID = dagger.CaddyID
 
 // The `ContainerID` scalar type represents an identifier for an object of type Container.
 type ContainerID = dagger.ContainerID
@@ -73,9 +70,6 @@ type InterfaceTypeDefID = dagger.InterfaceTypeDefID
 // An arbitrary JSON-encoded value.
 type JSON = dagger.JSON
 
-// The `KrokiID` scalar type represents an identifier for an object of type Kroki.
-type KrokiID = dagger.KrokiID
-
 // The `LabelID` scalar type represents an identifier for an object of type Label.
 type LabelID = dagger.LabelID
 
@@ -93,9 +87,6 @@ type ModuleID = dagger.ModuleID
 
 // The `ModuleSourceID` scalar type represents an identifier for an object of type ModuleSource.
 type ModuleSourceID = dagger.ModuleSourceID
-
-// The `NodejsID` scalar type represents an identifier for an object of type Nodejs.
-type NodejsID = dagger.NodejsID
 
 // The `ObjectTypeDefID` scalar type represents an identifier for an object of type ObjectTypeDef.
 type ObjectTypeDefID = dagger.ObjectTypeDefID
@@ -148,8 +139,6 @@ type PortForward = dagger.PortForward
 
 // A directory whose contents persist across runs.
 type CacheVolume = dagger.CacheVolume
-
-type Caddy = dagger.Caddy
 
 // An OCI-compatible container, also known as a Docker container.
 type Container = dagger.Container
@@ -326,8 +315,6 @@ type InputTypeDef = dagger.InputTypeDef
 // A definition of a custom interface defined in a Module.
 type InterfaceTypeDef = dagger.InterfaceTypeDef
 
-type Kroki = dagger.Kroki
-
 // A simple key value object that represents a label.
 type Label = dagger.Label
 
@@ -349,8 +336,6 @@ type ModuleDependency = dagger.ModuleDependency
 type ModuleSource = dagger.ModuleSource
 
 type WithModuleSourceFunc = dagger.WithModuleSourceFunc
-
-type Nodejs = dagger.Nodejs
 
 // A definition of a custom object defined in a Module.
 type ObjectTypeDef = dagger.ObjectTypeDef
@@ -380,9 +365,6 @@ type ModuleDependencyOpts = dagger.ModuleDependencyOpts
 
 // ModuleSourceOpts contains options for Client.ModuleSource
 type ModuleSourceOpts = dagger.ModuleSourceOpts
-
-// NodejsOpts contains options for Client.Nodejs
-type NodejsOpts = dagger.NodejsOpts
 
 // PipelineOpts contains options for Client.Pipeline
 type PipelineOpts = dagger.PipelineOpts
@@ -537,61 +519,17 @@ func convertSlice[I any, O any](in []I, f func(I) O) []O {
 	return out
 }
 
-func (r Presentation) MarshalJSON() ([]byte, error) {
+func (r Golang) MarshalJSON() ([]byte, error) {
 	var concrete struct{}
 	return json.Marshal(&concrete)
 }
 
-func (r *Presentation) UnmarshalJSON(bs []byte) error {
+func (r *Golang) UnmarshalJSON(bs []byte) error {
 	var concrete struct{}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (r PresentationBuilder) MarshalJSON() ([]byte, error) {
-	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
-	}
-	concrete.Directory = r.Directory
-	concrete.Npmrc = r.Npmrc
-	return json.Marshal(&concrete)
-}
-
-func (r *PresentationBuilder) UnmarshalJSON(bs []byte) error {
-	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
-	}
-	err := json.Unmarshal(bs, &concrete)
-	if err != nil {
-		return err
-	}
-	r.Directory = concrete.Directory
-	r.Npmrc = concrete.Npmrc
-	return nil
-}
-
-func (r PresentationBuild) MarshalJSON() ([]byte, error) {
-	var concrete struct {
-		Builder *Container
-	}
-	concrete.Builder = r.Builder
-	return json.Marshal(&concrete)
-}
-
-func (r *PresentationBuild) UnmarshalJSON(bs []byte) error {
-	var concrete struct {
-		Builder *Container
-	}
-	err := json.Unmarshal(bs, &concrete)
-	if err != nil {
-		return err
-	}
-	r.Builder = concrete.Builder
 	return nil
 }
 
@@ -654,38 +592,31 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
-	case "Presentation":
+	case "Golang":
 		switch fnName {
-		case "Init":
-			var parent Presentation
+		case "Configuration":
+			var parent Golang
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*Presentation).Init(&parent), nil
-		case "Builder":
-			var parent Presentation
+			var container *Container
+			if inputArgs["container"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["container"]), &container)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
+				}
+			}
+			return (*Golang).Configuration(&parent, container), nil
+		case "Container":
+			var parent Golang
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			var directory *Directory
-			if inputArgs["directory"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["directory"]), &directory)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg directory", err))
-				}
-			}
-			var npmrc *Secret
-			if inputArgs["npmrc"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["npmrc"]), &npmrc)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg npmrc", err))
-				}
-			}
-			return (*Presentation).Builder(&parent, directory, npmrc), nil
+			return (*Golang).Container(&parent), nil
 		case "":
-			var parent Presentation
+			var parent Golang
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -694,85 +625,20 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
-	case "PresentationBuilder":
-		switch fnName {
-		case "Container":
-			var parent PresentationBuilder
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuilder).Container(&parent), nil
-		case "Build":
-			var parent PresentationBuilder
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuilder).Build(&parent), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
-	case "PresentationBuild":
-		switch fnName {
-		case "Directory":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuild).Directory(&parent), nil
-		case "Container":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuild).Container(&parent), nil
-		case "Server":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuild).Server(&parent), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
 	case "":
 		return dag.Module().
 			WithObject(
-				dag.TypeDef().WithObject("Presentation").
+				dag.TypeDef().WithObject("Golang").
 					WithFunction(
-						dag.Function("Init",
-							dag.TypeDef().WithObject("Directory"))).
+						dag.Function("Configuration",
+							dag.TypeDef().WithObject("Container")).
+							WithArg("container", dag.TypeDef().WithObject("Container"))).
 					WithFunction(
-						dag.Function("Builder",
-							dag.TypeDef().WithObject("PresentationBuilder")).
-							WithArg("directory", dag.TypeDef().WithObject("Directory")).
-							WithArg("npmrc", dag.TypeDef().WithObject("Secret"))).
+						dag.Function("Container",
+							dag.TypeDef().WithObject("Container"))).
 					WithConstructor(
 						dag.Function("New",
-							dag.TypeDef().WithObject("Presentation")))).
-			WithObject(
-				dag.TypeDef().WithObject("PresentationBuilder").
-					WithFunction(
-						dag.Function("Container",
-							dag.TypeDef().WithObject("Container"))).
-					WithFunction(
-						dag.Function("Build",
-							dag.TypeDef().WithObject("PresentationBuild")))).
-			WithObject(
-				dag.TypeDef().WithObject("PresentationBuild").
-					WithFunction(
-						dag.Function("Directory",
-							dag.TypeDef().WithObject("Directory"))).
-					WithFunction(
-						dag.Function("Container",
-							dag.TypeDef().WithObject("Container"))).
-					WithFunction(
-						dag.Function("Server",
-							dag.TypeDef().WithObject("Service")))), nil
+							dag.TypeDef().WithObject("Golang")))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

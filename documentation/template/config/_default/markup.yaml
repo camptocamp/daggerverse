@@ -1,0 +1,10 @@
+---
+asciidocExt:
+  extensions:
+    - 'asciidoctor-kroki'
+
+  attributes:
+    # kroki-server-url: 'http://kroki:8000'
+    kroki-fetch-diagram: true
+
+  workingFolderCurrent: true

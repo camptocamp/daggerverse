@@ -1,14 +1,14 @@
 {
-  "name": "presentation",
+  "name": "hugo",
   "sdk": "go",
   "dependencies": [
     {
-      "name": "caddy",
-      "source": "../caddy"
+      "name": "busybox",
+      "source": "../busybox"
     },
     {
-      "name": "kroki",
-      "source": "../kroki"
+      "name": "golang",
+      "source": "../golang"
     },
     {
       "name": "nodejs",
@@ -17,6 +17,10 @@
     {
       "name": "redhat",
       "source": "../redhat"
+    },
+    {
+      "name": "sass",
+      "source": "../sass"
     }
   ],
   "source": ".",

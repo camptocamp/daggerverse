@@ -1,0 +1,16 @@
+{
+  "name": "sass",
+  "sdk": "go",
+  "dependencies": [
+    {
+      "name": "busybox",
+      "source": "../busybox"
+    },
+    {
+      "name": "redhat",
+      "source": "../redhat"
+    }
+  ],
+  "source": ".",
+  "engineVersion": "v0.10.2"
+}

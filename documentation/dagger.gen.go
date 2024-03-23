@@ -4,7 +4,7 @@ package main
 
 import (
 	"context"
-	"dagger/presentation/internal/dagger"
+	"dagger/documentation/internal/dagger"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -63,6 +63,12 @@ type GitRefID = dagger.GitRefID
 
 // The `GitRepositoryID` scalar type represents an identifier for an object of type GitRepository.
 type GitRepositoryID = dagger.GitRepositoryID
+
+// The `GolangID` scalar type represents an identifier for an object of type Golang.
+type GolangID = dagger.GolangID
+
+// The `HugoID` scalar type represents an identifier for an object of type Hugo.
+type HugoID = dagger.HugoID
 
 // The `InputTypeDefID` scalar type represents an identifier for an object of type InputTypeDef.
 type InputTypeDefID = dagger.InputTypeDefID
@@ -317,6 +323,13 @@ type GitRefTreeOpts = dagger.GitRefTreeOpts
 // A git repository.
 type GitRepository = dagger.GitRepository
 
+type Golang = dagger.Golang
+
+type Hugo = dagger.Hugo
+
+// HugoDirectoryOpts contains options for Hugo.Directory
+type HugoDirectoryOpts = dagger.HugoDirectoryOpts
+
 // A graphql input type, which is essentially just a group of named args.
 // This is currently only used to represent pre-existing usage of graphql input types
 // in the core API. It is not used by user modules and shouldn't ever be as user
@@ -374,6 +387,9 @@ type GitOpts = dagger.GitOpts
 
 // HTTPOpts contains options for Client.HTTP
 type HTTPOpts = dagger.HTTPOpts
+
+// HugoOpts contains options for Client.Hugo
+type HugoOpts = dagger.HugoOpts
 
 // ModuleDependencyOpts contains options for Client.ModuleDependency
 type ModuleDependencyOpts = dagger.ModuleDependencyOpts
@@ -537,12 +553,12 @@ func convertSlice[I any, O any](in []I, f func(I) O) []O {
 	return out
 }
 
-func (r Presentation) MarshalJSON() ([]byte, error) {
+func (r Documentation) MarshalJSON() ([]byte, error) {
 	var concrete struct{}
 	return json.Marshal(&concrete)
 }
 
-func (r *Presentation) UnmarshalJSON(bs []byte) error {
+func (r *Documentation) UnmarshalJSON(bs []byte) error {
 	var concrete struct{}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
@@ -551,31 +567,31 @@ func (r *Presentation) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
-func (r PresentationBuilder) MarshalJSON() ([]byte, error) {
+func (r DocumentationBuilder) MarshalJSON() ([]byte, error) {
 	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
+		Directory   *Directory
+		HugoVersion string
 	}
 	concrete.Directory = r.Directory
-	concrete.Npmrc = r.Npmrc
+	concrete.HugoVersion = r.HugoVersion
 	return json.Marshal(&concrete)
 }
 
-func (r *PresentationBuilder) UnmarshalJSON(bs []byte) error {
+func (r *DocumentationBuilder) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
+		Directory   *Directory
+		HugoVersion string
 	}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
 		return err
 	}
 	r.Directory = concrete.Directory
-	r.Npmrc = concrete.Npmrc
+	r.HugoVersion = concrete.HugoVersion
 	return nil
 }
 
-func (r PresentationBuild) MarshalJSON() ([]byte, error) {
+func (r DocumentationBuild) MarshalJSON() ([]byte, error) {
 	var concrete struct {
 		Builder *Container
 	}
@@ -583,7 +599,7 @@ func (r PresentationBuild) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&concrete)
 }
 
-func (r *PresentationBuild) UnmarshalJSON(bs []byte) error {
+func (r *DocumentationBuild) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
 		Builder *Container
 	}
@@ -654,17 +670,43 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
-	case "Presentation":
+	case "DocumentationBuild":
 		switch fnName {
-		case "Init":
-			var parent Presentation
+		case "Directory":
+			var parent DocumentationBuild
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*Presentation).Init(&parent), nil
+			return (*DocumentationBuild).Directory(&parent), nil
+		case "Container":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Container(&parent), nil
+		case "Server":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Server(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
+	case "Documentation":
+		switch fnName {
+		case "Init":
+			var parent Documentation
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*Documentation).Init(&parent), nil
 		case "Builder":
-			var parent Presentation
+			var parent Documentation
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -676,16 +718,9 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg directory", err))
 				}
 			}
-			var npmrc *Secret
-			if inputArgs["npmrc"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["npmrc"]), &npmrc)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg npmrc", err))
-				}
-			}
-			return (*Presentation).Builder(&parent, directory, npmrc), nil
+			return (*Documentation).Builder(&parent, ctx, directory)
 		case "":
-			var parent Presentation
+			var parent Documentation
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -694,76 +729,57 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
-	case "PresentationBuilder":
+	case "DocumentationBuilder":
 		switch fnName {
 		case "Container":
-			var parent PresentationBuilder
+			var parent DocumentationBuilder
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*PresentationBuilder).Container(&parent), nil
+			return (*DocumentationBuilder).Container(&parent), nil
 		case "Build":
-			var parent PresentationBuilder
+			var parent DocumentationBuilder
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*PresentationBuilder).Build(&parent), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
-	case "PresentationBuild":
-		switch fnName {
-		case "Directory":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			var args []string
+			if inputArgs["args"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["args"]), &args)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg args", err))
+				}
 			}
-			return (*PresentationBuild).Directory(&parent), nil
-		case "Container":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuild).Container(&parent), nil
-		case "Server":
-			var parent PresentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*PresentationBuild).Server(&parent), nil
+			return (*DocumentationBuilder).Build(&parent, args), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
 	case "":
 		return dag.Module().
 			WithObject(
-				dag.TypeDef().WithObject("Presentation").
+				dag.TypeDef().WithObject("Documentation").
 					WithFunction(
 						dag.Function("Init",
 							dag.TypeDef().WithObject("Directory"))).
 					WithFunction(
 						dag.Function("Builder",
-							dag.TypeDef().WithObject("PresentationBuilder")).
-							WithArg("directory", dag.TypeDef().WithObject("Directory")).
-							WithArg("npmrc", dag.TypeDef().WithObject("Secret"))).
+							dag.TypeDef().WithObject("DocumentationBuilder")).
+							WithArg("directory", dag.TypeDef().WithObject("Directory"))).
 					WithConstructor(
 						dag.Function("New",
-							dag.TypeDef().WithObject("Presentation")))).
+							dag.TypeDef().WithObject("Documentation")))).
 			WithObject(
-				dag.TypeDef().WithObject("PresentationBuilder").
+				dag.TypeDef().WithObject("DocumentationBuilder").
 					WithFunction(
 						dag.Function("Container",
 							dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Build",
-							dag.TypeDef().WithObject("PresentationBuild")))).
+							dag.TypeDef().WithObject("DocumentationBuild")).
+							WithArg("args", dag.TypeDef().WithListOf(dag.TypeDef().WithKind(StringKind)).WithOptional(true)))).
 			WithObject(
-				dag.TypeDef().WithObject("PresentationBuild").
+				dag.TypeDef().WithObject("DocumentationBuild").
 					WithFunction(
 						dag.Function("Directory",
 							dag.TypeDef().WithObject("Directory"))).
@@ -772,7 +788,8 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 							dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Server",
-							dag.TypeDef().WithObject("Service")))), nil
+							dag.TypeDef().WithObject("Service"))).
+					WithField("Builder", dag.TypeDef().WithObject("Container"))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

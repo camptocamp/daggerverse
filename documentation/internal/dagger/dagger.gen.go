@@ -17,7 +17,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
-	"dagger/presentation/internal/querybuilder"
+	"dagger/documentation/internal/querybuilder"
 )
 
 // assertNotNil panic if the given value is nil.
@@ -152,6 +152,12 @@ type GitRefID string
 
 // The `GitRepositoryID` scalar type represents an identifier for an object of type GitRepository.
 type GitRepositoryID string
+
+// The `GolangID` scalar type represents an identifier for an object of type Golang.
+type GolangID string
+
+// The `HugoID` scalar type represents an identifier for an object of type Hugo.
+type HugoID string
 
 // The `InputTypeDefID` scalar type represents an identifier for an object of type InputTypeDef.
 type InputTypeDefID string
@@ -3682,6 +3688,230 @@ func (r *GitRepository) Tag(name string) *GitRef {
 	}
 }
 
+type Golang struct {
+	query *querybuilder.Selection
+
+	id *GolangID
+}
+
+func (r *Golang) WithGraphQLQuery(q *querybuilder.Selection) *Golang {
+	return &Golang{
+		query: q,
+	}
+}
+
+func (r *Golang) Configuration(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("configuration")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
+}
+
+func (r *Golang) Container() *Container {
+	q := r.query.Select("container")
+
+	return &Container{
+		query: q,
+	}
+}
+
+// A unique identifier for this Golang.
+func (r *Golang) ID(ctx context.Context) (GolangID, error) {
+	if r.id != nil {
+		return *r.id, nil
+	}
+	q := r.query.Select("id")
+
+	var response GolangID
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
+func (r *Golang) XXX_GraphQLType() string {
+	return "Golang"
+}
+
+// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
+func (r *Golang) XXX_GraphQLIDType() string {
+	return "GolangID"
+}
+
+// XXX_GraphQLID is an internal function. It returns the underlying type ID
+func (r *Golang) XXX_GraphQLID(ctx context.Context) (string, error) {
+	id, err := r.ID(ctx)
+	if err != nil {
+		return "", err
+	}
+	return string(id), nil
+}
+
+func (r *Golang) MarshalJSON() ([]byte, error) {
+	id, err := r.ID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(id)
+}
+func (r *Golang) UnmarshalJSON(bs []byte) error {
+	var id string
+	err := json.Unmarshal(bs, &id)
+	if err != nil {
+		return err
+	}
+	*r = *dag.LoadGolangFromID(GolangID(id))
+	return nil
+}
+
+type Hugo struct {
+	query *querybuilder.Selection
+
+	id          *HugoID
+	platform    *string
+	sassVersion *string
+	version     *string
+}
+
+func (r *Hugo) WithGraphQLQuery(q *querybuilder.Selection) *Hugo {
+	return &Hugo{
+		query: q,
+	}
+}
+
+func (r *Hugo) Configuration(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("configuration")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
+}
+
+func (r *Hugo) Container() *Container {
+	q := r.query.Select("container")
+
+	return &Container{
+		query: q,
+	}
+}
+
+// HugoDirectoryOpts contains options for Hugo.Directory
+type HugoDirectoryOpts struct {
+	Prefix string
+}
+
+func (r *Hugo) Directory(opts ...HugoDirectoryOpts) *Directory {
+	q := r.query.Select("directory")
+	for i := len(opts) - 1; i >= 0; i-- {
+		// `prefix` optional argument
+		if !querybuilder.IsZeroValue(opts[i].Prefix) {
+			q = q.Arg("prefix", opts[i].Prefix)
+		}
+	}
+
+	return &Directory{
+		query: q,
+	}
+}
+
+func (r *Hugo) File() *File {
+	q := r.query.Select("file")
+
+	return &File{
+		query: q,
+	}
+}
+
+// A unique identifier for this Hugo.
+func (r *Hugo) ID(ctx context.Context) (HugoID, error) {
+	if r.id != nil {
+		return *r.id, nil
+	}
+	q := r.query.Select("id")
+
+	var response HugoID
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
+func (r *Hugo) XXX_GraphQLType() string {
+	return "Hugo"
+}
+
+// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
+func (r *Hugo) XXX_GraphQLIDType() string {
+	return "HugoID"
+}
+
+// XXX_GraphQLID is an internal function. It returns the underlying type ID
+func (r *Hugo) XXX_GraphQLID(ctx context.Context) (string, error) {
+	id, err := r.ID(ctx)
+	if err != nil {
+		return "", err
+	}
+	return string(id), nil
+}
+
+func (r *Hugo) MarshalJSON() ([]byte, error) {
+	id, err := r.ID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(id)
+}
+func (r *Hugo) UnmarshalJSON(bs []byte) error {
+	var id string
+	err := json.Unmarshal(bs, &id)
+	if err != nil {
+		return err
+	}
+	*r = *dag.LoadHugoFromID(HugoID(id))
+	return nil
+}
+
+func (r *Hugo) Platform(ctx context.Context) (string, error) {
+	if r.platform != nil {
+		return *r.platform, nil
+	}
+	q := r.query.Select("platform")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+func (r *Hugo) SassVersion(ctx context.Context) (string, error) {
+	if r.sassVersion != nil {
+		return *r.sassVersion, nil
+	}
+	q := r.query.Select("sassVersion")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+func (r *Hugo) Version(ctx context.Context) (string, error) {
+	if r.version != nil {
+		return *r.version, nil
+	}
+	q := r.query.Select("version")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
 // A graphql input type, which is essentially just a group of named args.
 // This is currently only used to represent pre-existing usage of graphql input types
 // in the core API. It is not used by user modules and shouldn't ever be as user
@@ -5651,6 +5881,14 @@ func (r *Client) Git(url string, opts ...GitOpts) *GitRepository {
 	}
 }
 
+func (r *Client) Golang() *Golang {
+	q := r.query.Select("golang")
+
+	return &Golang{
+		query: q,
+	}
+}
+
 // HTTPOpts contains options for Client.HTTP
 type HTTPOpts struct {
 	// A service which must be started before the URL is fetched.
@@ -5669,6 +5907,32 @@ func (r *Client) HTTP(url string, opts ...HTTPOpts) *File {
 	q = q.Arg("url", url)
 
 	return &File{
+		query: q,
+	}
+}
+
+// HugoOpts contains options for Client.Hugo
+type HugoOpts struct {
+	SassVersion string
+
+	Platform string
+}
+
+func (r *Client) Hugo(version string, opts ...HugoOpts) *Hugo {
+	q := r.query.Select("hugo")
+	for i := len(opts) - 1; i >= 0; i-- {
+		// `sassVersion` optional argument
+		if !querybuilder.IsZeroValue(opts[i].SassVersion) {
+			q = q.Arg("sassVersion", opts[i].SassVersion)
+		}
+		// `platform` optional argument
+		if !querybuilder.IsZeroValue(opts[i].Platform) {
+			q = q.Arg("platform", opts[i].Platform)
+		}
+	}
+	q = q.Arg("version", version)
+
+	return &Hugo{
 		query: q,
 	}
 }
@@ -5837,6 +6101,26 @@ func (r *Client) LoadGitRepositoryFromID(id GitRepositoryID) *GitRepository {
 	q = q.Arg("id", id)
 
 	return &GitRepository{
+		query: q,
+	}
+}
+
+// Load a Golang from its ID.
+func (r *Client) LoadGolangFromID(id GolangID) *Golang {
+	q := r.query.Select("loadGolangFromID")
+	q = q.Arg("id", id)
+
+	return &Golang{
+		query: q,
+	}
+}
+
+// Load a Hugo from its ID.
+func (r *Client) LoadHugoFromID(id HugoID) *Hugo {
+	q := r.query.Select("loadHugoFromID")
+	q = q.Arg("id", id)
+
+	return &Hugo{
 		query: q,
 	}
 }

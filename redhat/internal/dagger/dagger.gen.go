@@ -17,7 +17,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
-	"dagger/presentation/internal/querybuilder"
+	"dagger/redhat/internal/querybuilder"
 )
 
 // assertNotNil panic if the given value is nil.
@@ -108,9 +108,6 @@ func (e *ExecError) Unwrap() error {
 // The `CacheVolumeID` scalar type represents an identifier for an object of type CacheVolume.
 type CacheVolumeID string
 
-// The `CaddyID` scalar type represents an identifier for an object of type Caddy.
-type CaddyID string
-
 // The `ContainerID` scalar type represents an identifier for an object of type Container.
 type ContainerID string
 
@@ -162,9 +159,6 @@ type InterfaceTypeDefID string
 // An arbitrary JSON-encoded value.
 type JSON string
 
-// The `KrokiID` scalar type represents an identifier for an object of type Kroki.
-type KrokiID string
-
 // The `LabelID` scalar type represents an identifier for an object of type Label.
 type LabelID string
 
@@ -183,9 +177,6 @@ type ModuleID string
 // The `ModuleSourceID` scalar type represents an identifier for an object of type ModuleSource.
 type ModuleSourceID string
 
-// The `NodejsID` scalar type represents an identifier for an object of type Nodejs.
-type NodejsID string
-
 // The `ObjectTypeDefID` scalar type represents an identifier for an object of type ObjectTypeDef.
 type ObjectTypeDefID string
 
@@ -196,15 +187,6 @@ type Platform string
 
 // The `PortID` scalar type represents an identifier for an object of type Port.
 type PortID string
-
-// The `RedhatID` scalar type represents an identifier for an object of type Redhat.
-type RedhatID string
-
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID string
-
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID string
 
 // The `SecretID` scalar type represents an identifier for an object of type Secret.
 type SecretID string
@@ -316,83 +298,6 @@ func (r *CacheVolume) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadCacheVolumeFromID(CacheVolumeID(id))
 	return nil
-}
-
-type Caddy struct {
-	query *querybuilder.Selection
-
-	id *CaddyID
-}
-
-func (r *Caddy) WithGraphQLQuery(q *querybuilder.Selection) *Caddy {
-	return &Caddy{
-		query: q,
-	}
-}
-
-func (r *Caddy) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Caddy.
-func (r *Caddy) ID(ctx context.Context) (CaddyID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response CaddyID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Caddy) XXX_GraphQLType() string {
-	return "Caddy"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Caddy) XXX_GraphQLIDType() string {
-	return "CaddyID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Caddy) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Caddy) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Caddy) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadCaddyFromID(CaddyID(id))
-	return nil
-}
-
-func (r *Caddy) Server() *Service {
-	q := r.query.Select("server")
-
-	return &Service{
-		query: q,
-	}
 }
 
 // An OCI-compatible container, also known as a Docker container.
@@ -3931,83 +3836,6 @@ func (r *InterfaceTypeDef) SourceModuleName(ctx context.Context) (string, error)
 	return response, q.Execute(ctx)
 }
 
-type Kroki struct {
-	query *querybuilder.Selection
-
-	id *KrokiID
-}
-
-func (r *Kroki) WithGraphQLQuery(q *querybuilder.Selection) *Kroki {
-	return &Kroki{
-		query: q,
-	}
-}
-
-func (r *Kroki) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Kroki.
-func (r *Kroki) ID(ctx context.Context) (KrokiID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response KrokiID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Kroki) XXX_GraphQLType() string {
-	return "Kroki"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Kroki) XXX_GraphQLIDType() string {
-	return "KrokiID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Kroki) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Kroki) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Kroki) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadKrokiFromID(KrokiID(id))
-	return nil
-}
-
-func (r *Kroki) Server() *Service {
-	q := r.query.Select("server")
-
-	return &Service{
-		query: q,
-	}
-}
-
 // A simple key value object that represents a label.
 type Label struct {
 	query *querybuilder.Selection
@@ -5019,85 +4847,6 @@ func (r *ModuleSource) WithSourceSubpath(path string) *ModuleSource {
 	}
 }
 
-type Nodejs struct {
-	query *querybuilder.Selection
-
-	id *NodejsID
-}
-
-func (r *Nodejs) WithGraphQLQuery(q *querybuilder.Selection) *Nodejs {
-	return &Nodejs{
-		query: q,
-	}
-}
-
-func (r *Nodejs) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
-func (r *Nodejs) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Nodejs.
-func (r *Nodejs) ID(ctx context.Context) (NodejsID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response NodejsID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Nodejs) XXX_GraphQLType() string {
-	return "Nodejs"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Nodejs) XXX_GraphQLIDType() string {
-	return "NodejsID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Nodejs) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Nodejs) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Nodejs) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadNodejsFromID(NodejsID(id))
-	return nil
-}
-
 // A definition of a custom object defined in a Module.
 type ObjectTypeDef struct {
 	query *querybuilder.Selection
@@ -5444,16 +5193,6 @@ func (r *Client) CacheVolume(key string) *CacheVolume {
 	}
 }
 
-func (r *Client) Caddy(directory *Directory) *Caddy {
-	assertNotNil("directory", directory)
-	q := r.query.Select("caddy")
-	q = q.Arg("directory", directory)
-
-	return &Caddy{
-		query: q,
-	}
-}
-
 // Checks if the current Dagger Engine is compatible with an SDK's required version.
 func (r *Client) CheckVersionCompatibility(ctx context.Context, version string) (bool, error) {
 	q := r.query.Select("checkVersionCompatibility")
@@ -5673,30 +5412,12 @@ func (r *Client) HTTP(url string, opts ...HTTPOpts) *File {
 	}
 }
 
-func (r *Client) Kroki() *Kroki {
-	q := r.query.Select("kroki")
-
-	return &Kroki{
-		query: q,
-	}
-}
-
 // Load a CacheVolume from its ID.
 func (r *Client) LoadCacheVolumeFromID(id CacheVolumeID) *CacheVolume {
 	q := r.query.Select("loadCacheVolumeFromID")
 	q = q.Arg("id", id)
 
 	return &CacheVolume{
-		query: q,
-	}
-}
-
-// Load a Caddy from its ID.
-func (r *Client) LoadCaddyFromID(id CaddyID) *Caddy {
-	q := r.query.Select("loadCaddyFromID")
-	q = q.Arg("id", id)
-
-	return &Caddy{
 		query: q,
 	}
 }
@@ -5861,16 +5582,6 @@ func (r *Client) LoadInterfaceTypeDefFromID(id InterfaceTypeDefID) *InterfaceTyp
 	}
 }
 
-// Load a Kroki from its ID.
-func (r *Client) LoadKrokiFromID(id KrokiID) *Kroki {
-	q := r.query.Select("loadKrokiFromID")
-	q = q.Arg("id", id)
-
-	return &Kroki{
-		query: q,
-	}
-}
-
 // Load a Label from its ID.
 func (r *Client) LoadLabelFromID(id LabelID) *Label {
 	q := r.query.Select("loadLabelFromID")
@@ -5931,16 +5642,6 @@ func (r *Client) LoadModuleSourceFromID(id ModuleSourceID) *ModuleSource {
 	}
 }
 
-// Load a Nodejs from its ID.
-func (r *Client) LoadNodejsFromID(id NodejsID) *Nodejs {
-	q := r.query.Select("loadNodejsFromID")
-	q = q.Arg("id", id)
-
-	return &Nodejs{
-		query: q,
-	}
-}
-
 // Load a ObjectTypeDef from its ID.
 func (r *Client) LoadObjectTypeDefFromID(id ObjectTypeDefID) *ObjectTypeDef {
 	q := r.query.Select("loadObjectTypeDefFromID")
@@ -5957,36 +5658,6 @@ func (r *Client) LoadPortFromID(id PortID) *Port {
 	q = q.Arg("id", id)
 
 	return &Port{
-		query: q,
-	}
-}
-
-// Load a Redhat from its ID.
-func (r *Client) LoadRedhatFromID(id RedhatID) *Redhat {
-	q := r.query.Select("loadRedhatFromID")
-	q = q.Arg("id", id)
-
-	return &Redhat{
-		query: q,
-	}
-}
-
-// Load a RedhatRedHatModule from its ID.
-func (r *Client) LoadRedhatRedHatModuleFromID(id RedhatRedHatModuleID) *RedhatRedHatModule {
-	q := r.query.Select("loadRedhatRedHatModuleFromID")
-	q = q.Arg("id", id)
-
-	return &RedhatRedHatModule{
-		query: q,
-	}
-}
-
-// Load a RedhatRedHatPackages from its ID.
-func (r *Client) LoadRedhatRedHatPackagesFromID(id RedhatRedHatPackagesID) *RedhatRedHatPackages {
-	q := r.query.Select("loadRedhatRedHatPackagesFromID")
-	q = q.Arg("id", id)
-
-	return &RedhatRedHatPackages{
 		query: q,
 	}
 }
@@ -6095,25 +5766,6 @@ func (r *Client) ModuleSource(refString string, opts ...ModuleSourceOpts) *Modul
 	}
 }
 
-// NodejsOpts contains options for Client.Nodejs
-type NodejsOpts struct {
-	Npmrc *Secret
-}
-
-func (r *Client) Nodejs(opts ...NodejsOpts) *Nodejs {
-	q := r.query.Select("nodejs")
-	for i := len(opts) - 1; i >= 0; i-- {
-		// `npmrc` optional argument
-		if !querybuilder.IsZeroValue(opts[i].Npmrc) {
-			q = q.Arg("npmrc", opts[i].Npmrc)
-		}
-	}
-
-	return &Nodejs{
-		query: q,
-	}
-}
-
 // PipelineOpts contains options for Client.Pipeline
 type PipelineOpts struct {
 	// Description of the sub-pipeline.
@@ -6140,14 +5792,6 @@ func (r *Client) Pipeline(name string, opts ...PipelineOpts) *Client {
 	return &Client{
 		query:  q,
 		client: r.client,
-	}
-}
-
-func (r *Client) Redhat() *Redhat {
-	q := r.query.Select("redhat")
-
-	return &Redhat{
-		query: q,
 	}
 }
 
@@ -6204,257 +5848,6 @@ func (r *Client) TypeDef() *TypeDef {
 	return &TypeDef{
 		query: q,
 	}
-}
-
-type Redhat struct {
-	query *querybuilder.Selection
-
-	id *RedhatID
-}
-
-func (r *Redhat) WithGraphQLQuery(q *querybuilder.Selection) *Redhat {
-	return &Redhat{
-		query: q,
-	}
-}
-
-func (r *Redhat) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this Redhat.
-func (r *Redhat) ID(ctx context.Context) (RedhatID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response RedhatID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *Redhat) XXX_GraphQLType() string {
-	return "Redhat"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *Redhat) XXX_GraphQLIDType() string {
-	return "RedhatID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *Redhat) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *Redhat) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *Redhat) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadRedhatFromID(RedhatID(id))
-	return nil
-}
-
-func (r *Redhat) Module(name string) *RedhatRedHatModule {
-	q := r.query.Select("module")
-	q = q.Arg("name", name)
-
-	return &RedhatRedHatModule{
-		query: q,
-	}
-}
-
-func (r *Redhat) Packages(names []string) *RedhatRedHatPackages {
-	q := r.query.Select("packages")
-	q = q.Arg("names", names)
-
-	return &RedhatRedHatPackages{
-		query: q,
-	}
-}
-
-type RedhatRedHatModule struct {
-	query *querybuilder.Selection
-
-	id   *RedhatRedHatModuleID
-	name *string
-}
-
-func (r *RedhatRedHatModule) WithGraphQLQuery(q *querybuilder.Selection) *RedhatRedHatModule {
-	return &RedhatRedHatModule{
-		query: q,
-	}
-}
-
-func (r *RedhatRedHatModule) Enabled(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("enabled")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
-// A unique identifier for this RedhatRedHatModule.
-func (r *RedhatRedHatModule) ID(ctx context.Context) (RedhatRedHatModuleID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response RedhatRedHatModuleID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *RedhatRedHatModule) XXX_GraphQLType() string {
-	return "RedhatRedHatModule"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *RedhatRedHatModule) XXX_GraphQLIDType() string {
-	return "RedhatRedHatModuleID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *RedhatRedHatModule) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *RedhatRedHatModule) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *RedhatRedHatModule) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadRedhatRedHatModuleFromID(RedhatRedHatModuleID(id))
-	return nil
-}
-
-func (r *RedhatRedHatModule) Name(ctx context.Context) (string, error) {
-	if r.name != nil {
-		return *r.name, nil
-	}
-	q := r.query.Select("name")
-
-	var response string
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-type RedhatRedHatPackages struct {
-	query *querybuilder.Selection
-
-	id *RedhatRedHatPackagesID
-}
-
-func (r *RedhatRedHatPackages) WithGraphQLQuery(q *querybuilder.Selection) *RedhatRedHatPackages {
-	return &RedhatRedHatPackages{
-		query: q,
-	}
-}
-
-// A unique identifier for this RedhatRedHatPackages.
-func (r *RedhatRedHatPackages) ID(ctx context.Context) (RedhatRedHatPackagesID, error) {
-	if r.id != nil {
-		return *r.id, nil
-	}
-	q := r.query.Select("id")
-
-	var response RedhatRedHatPackagesID
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
-}
-
-// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *RedhatRedHatPackages) XXX_GraphQLType() string {
-	return "RedhatRedHatPackages"
-}
-
-// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *RedhatRedHatPackages) XXX_GraphQLIDType() string {
-	return "RedhatRedHatPackagesID"
-}
-
-// XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *RedhatRedHatPackages) XXX_GraphQLID(ctx context.Context) (string, error) {
-	id, err := r.ID(ctx)
-	if err != nil {
-		return "", err
-	}
-	return string(id), nil
-}
-
-func (r *RedhatRedHatPackages) MarshalJSON() ([]byte, error) {
-	id, err := r.ID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(id)
-}
-func (r *RedhatRedHatPackages) UnmarshalJSON(bs []byte) error {
-	var id string
-	err := json.Unmarshal(bs, &id)
-	if err != nil {
-		return err
-	}
-	*r = *dag.LoadRedhatRedHatPackagesFromID(RedhatRedHatPackagesID(id))
-	return nil
-}
-
-func (r *RedhatRedHatPackages) Installed(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("installed")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
-func (r *RedhatRedHatPackages) Names(ctx context.Context) ([]string, error) {
-	q := r.query.Select("names")
-
-	var response []string
-
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
 }
 
 // A reference to a secret value, which can be handled more safely than the value itself.

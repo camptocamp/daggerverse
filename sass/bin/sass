@@ -1,0 +1,5 @@
+#!/bin/sh
+
+prefix="$(realpath "$(dirname "$0")/../libexec/sass")"
+
+exec "$prefix/dart" "$prefix/sass.snapshot" "$@"
