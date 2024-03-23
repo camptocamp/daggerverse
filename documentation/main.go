@@ -77,13 +77,6 @@ func (builder *DocumentationBuilder) Build(
 	// +optional
 	args []string,
 ) *DocumentationBuild {
-	if args == nil {
-		args = []string{
-			"--cleanDestinationDir",
-			"--minify",
-		}
-	}
-
 	build := &DocumentationBuild{
 		Builder: builder.Container().WithExec(args),
 	}
