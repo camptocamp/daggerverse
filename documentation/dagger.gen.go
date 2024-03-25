@@ -680,6 +680,32 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
+	case "DocumentationBuild":
+		switch fnName {
+		case "Directory":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Directory(&parent), nil
+		case "Container":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Container(&parent), nil
+		case "Server":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Server(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
 	case "Documentation":
 		switch fnName {
 		case "Init":
@@ -736,32 +762,6 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				}
 			}
 			return (*DocumentationBuilder).Build(&parent, args), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
-	case "DocumentationBuild":
-		switch fnName {
-		case "Directory":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Directory(&parent), nil
-		case "Container":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Container(&parent), nil
-		case "Server":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Server(&parent), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}

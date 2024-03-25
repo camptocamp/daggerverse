@@ -5,8 +5,11 @@ ui:
   sidebar_menu_compact: true
   sidebar_menu_foldable: true
 
+github_repo: &github_repo 'https://github.com/camptocamp/daggerverse'
+github_subdir: 'documentation/template'
+
 links:
   developer:
     - name: 'GitHub'
-      url: 'https://github.com/camptocamp'
+      url: *github_repo
       icon: 'fab fa-github'

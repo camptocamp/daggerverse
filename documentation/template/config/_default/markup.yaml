@@ -4,7 +4,12 @@ asciidocExt:
     - 'asciidoctor-kroki'
 
   attributes:
+    # FIXME
+    # Re-enable once Dagger issue is fixed
+    # https://github.com/dagger/dagger/pull/6914
     # kroki-server-url: 'http://kroki:8000'
     kroki-fetch-diagram: true
+
+    sectanchors: true
 
   workingFolderCurrent: true

@@ -1,8 +1,16 @@
 ---
 title: 'Documentation'
-layout: 'section'
 
 cascade:
- - type: 'docs'
+  - type: 'docs'
 ---
+This documentation tries to follow the principles prescribed by the link:https://diataxis.fr[Diátaxis^] documentation system.
+
+== Diátaxis
+
+Diátaxis identifies four kinds of documentation based on two orthogonal dimensions which are:
+
+- the objective which the user is seeking, whether it is acquiring skills or applying skills;
+- the kind of information provided, whether it is action oriented or knowledge oriented.
+
 image::diataxis.webp[]

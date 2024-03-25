@@ -15,8 +15,7 @@ func New() *Documentation {
 }
 
 func (documentation *Documentation) Init() *Directory {
-	template := dag.CurrentModule().Source().Directory("template").
-		WithoutFile(".gitignore")
+	template := dag.CurrentModule().Source().Directory("template")
 
 	return template
 }

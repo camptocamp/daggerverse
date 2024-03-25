@@ -15,7 +15,8 @@ John Doe
 :docinfo: private,shared
 :favicon: favicon-32x32.png
 // FIXME
-// Re-enable once the issue is fixed with the Dagger pipeline
+// Re-enable once Dagger issue is fixed
+// https://github.com/dagger/dagger/pull/6914
 // :kroki-server-url: http://kroki:8000
 :kroki-fetch-diagram: true
 

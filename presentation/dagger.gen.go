@@ -668,46 +668,6 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
-	case "Presentation":
-		switch fnName {
-		case "Init":
-			var parent Presentation
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*Presentation).Init(&parent), nil
-		case "Builder":
-			var parent Presentation
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			var directory *Directory
-			if inputArgs["directory"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["directory"]), &directory)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg directory", err))
-				}
-			}
-			var npmrc *Secret
-			if inputArgs["npmrc"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["npmrc"]), &npmrc)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg npmrc", err))
-				}
-			}
-			return (*Presentation).Builder(&parent, ctx, directory, npmrc)
-		case "":
-			var parent Presentation
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return New(), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
 	case "PresentationBuilder":
 		switch fnName {
 		case "Container":
@@ -750,6 +710,46 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
 			return (*PresentationBuild).Server(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
+	case "Presentation":
+		switch fnName {
+		case "Init":
+			var parent Presentation
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*Presentation).Init(&parent), nil
+		case "Builder":
+			var parent Presentation
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			var directory *Directory
+			if inputArgs["directory"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["directory"]), &directory)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg directory", err))
+				}
+			}
+			var npmrc *Secret
+			if inputArgs["npmrc"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["npmrc"]), &npmrc)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg npmrc", err))
+				}
+			}
+			return (*Presentation).Builder(&parent, ctx, directory, npmrc)
+		case "":
+			var parent Presentation
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return New(), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
