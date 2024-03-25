@@ -70,6 +70,7 @@ func (builder *DocumentationBuilder) Container() *Container {
 }
 
 type DocumentationBuild struct {
+	// +private
 	Builder *Container
 }
 

@@ -1,19 +1,8 @@
 ---
 title: 'Documentation'
-kind: 'section'
+layout: 'section'
 
 cascade:
-  - type: 'docs'
-    _target:
-      path: '/**'
-      kind: 'home'
-  - type: 'docs'
-    _target:
-      path: '/**'
-      kind: 'section'
-  - type: 'docs'
-    _target:
-      path: '/**'
-      kind: 'page'
+ - type: 'docs'
 ---
 image::diataxis.webp[]
