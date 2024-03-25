@@ -30,7 +30,7 @@ To continually rebuild the presentation each time the slides are modified, use t
 npm run autobuild
 ```
 
-To preview the presentation, execute the following command (it can be executed in parallel with the automatic build) then visit [localhost:1234](http://localhost:1234):
+To preview the presentation, execute the following command (it can be executed in parallel with the automatic build), then visit [localhost:1234](http://localhost:1234):
 
 ```shell
 npm run serve
@@ -43,13 +43,13 @@ Install [Dagger].
 Execute the following command to build the presentation:
 
 ```shell
-dagger call -m presentation --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' --output 'dist' build
+dagger call -m presentation builder --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' build --output 'dist'
 ```
 
-To preview the presentation, execute the following command then visit [localhost:8080](http://localhost:8080):
+To preview the presentation, execute the following command, then visit [localhost:8080](http://localhost:8080):
 
 ```shell
-dagger call -m presentation --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' server up
+dagger call -m presentation builder --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' build server up
 ```
 
 [AsciiDoc]: https://docs.asciidoctor.org/asciidoc/latest/
