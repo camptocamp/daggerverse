@@ -518,7 +518,35 @@ func (r *Redhat) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
-func (r RedHatModule) MarshalJSON() ([]byte, error) {
+func (r RedhatMicro) MarshalJSON() ([]byte, error) {
+	var concrete struct{}
+	return json.Marshal(&concrete)
+}
+
+func (r *RedhatMicro) UnmarshalJSON(bs []byte) error {
+	var concrete struct{}
+	err := json.Unmarshal(bs, &concrete)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r RedhatMinimal) MarshalJSON() ([]byte, error) {
+	var concrete struct{}
+	return json.Marshal(&concrete)
+}
+
+func (r *RedhatMinimal) UnmarshalJSON(bs []byte) error {
+	var concrete struct{}
+	err := json.Unmarshal(bs, &concrete)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r RedhatMinimalModule) MarshalJSON() ([]byte, error) {
 	var concrete struct {
 		Name string
 	}
@@ -526,7 +554,7 @@ func (r RedHatModule) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&concrete)
 }
 
-func (r *RedHatModule) UnmarshalJSON(bs []byte) error {
+func (r *RedhatMinimalModule) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
 		Name string
 	}
@@ -538,7 +566,7 @@ func (r *RedHatModule) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
-func (r RedHatPackages) MarshalJSON() ([]byte, error) {
+func (r RedhatMinimalPackages) MarshalJSON() ([]byte, error) {
 	var concrete struct {
 		Names []string
 	}
@@ -546,7 +574,7 @@ func (r RedHatPackages) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&concrete)
 }
 
-func (r *RedHatPackages) UnmarshalJSON(bs []byte) error {
+func (r *RedhatMinimalPackages) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
 		Names []string
 	}
@@ -619,15 +647,46 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 	switch parentName {
 	case "Redhat":
 		switch fnName {
-		case "Container":
+		case "Micro":
 			var parent Redhat
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*Redhat).Container(&parent), nil
-		case "Module":
+			return (*Redhat).Micro(&parent), nil
+		case "Minimal":
 			var parent Redhat
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*Redhat).Minimal(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
+	case "RedhatMicro":
+		switch fnName {
+		case "Container":
+			var parent RedhatMicro
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*RedhatMicro).Container(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
+	case "RedhatMinimal":
+		switch fnName {
+		case "Container":
+			var parent RedhatMinimal
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*RedhatMinimal).Container(&parent), nil
+		case "Module":
+			var parent RedhatMinimal
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -639,9 +698,9 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg name", err))
 				}
 			}
-			return (*Redhat).Module(&parent, name), nil
+			return (*RedhatMinimal).Module(&parent, name), nil
 		case "Packages":
-			var parent Redhat
+			var parent RedhatMinimal
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -653,14 +712,14 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg names", err))
 				}
 			}
-			return (*Redhat).Packages(&parent, names), nil
+			return (*RedhatMinimal).Packages(&parent, names), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
-	case "RedHatModule":
+	case "RedhatMinimalModule":
 		switch fnName {
 		case "Enabled":
-			var parent RedHatModule
+			var parent RedhatMinimalModule
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -672,14 +731,14 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
 				}
 			}
-			return (*RedHatModule).Enabled(&parent, container), nil
+			return (*RedhatMinimalModule).Enabled(&parent, container), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
-	case "RedHatPackages":
+	case "RedhatMinimalPackages":
 		switch fnName {
 		case "Installed":
-			var parent RedHatPackages
+			var parent RedhatMinimalPackages
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
@@ -691,7 +750,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
 				}
 			}
-			return (*RedHatPackages).Installed(&parent, container), nil
+			return (*RedhatMinimalPackages).Installed(&parent, container), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
@@ -700,25 +759,38 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 			WithObject(
 				dag.TypeDef().WithObject("Redhat").
 					WithFunction(
+						dag.Function("Micro",
+							dag.TypeDef().WithObject("RedhatMicro"))).
+					WithFunction(
+						dag.Function("Minimal",
+							dag.TypeDef().WithObject("RedhatMinimal")))).
+			WithObject(
+				dag.TypeDef().WithObject("RedhatMicro").
+					WithFunction(
+						dag.Function("Container",
+							dag.TypeDef().WithObject("Container")))).
+			WithObject(
+				dag.TypeDef().WithObject("RedhatMinimal").
+					WithFunction(
 						dag.Function("Container",
 							dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Module",
-							dag.TypeDef().WithObject("RedHatModule")).
+							dag.TypeDef().WithObject("RedhatMinimalModule")).
 							WithArg("name", dag.TypeDef().WithKind(StringKind))).
 					WithFunction(
 						dag.Function("Packages",
-							dag.TypeDef().WithObject("RedHatPackages")).
+							dag.TypeDef().WithObject("RedhatMinimalPackages")).
 							WithArg("names", dag.TypeDef().WithListOf(dag.TypeDef().WithKind(StringKind))))).
 			WithObject(
-				dag.TypeDef().WithObject("RedHatModule").
+				dag.TypeDef().WithObject("RedhatMinimalModule").
 					WithFunction(
 						dag.Function("Enabled",
 							dag.TypeDef().WithObject("Container")).
 							WithArg("container", dag.TypeDef().WithObject("Container"))).
 					WithField("Name", dag.TypeDef().WithKind(StringKind))).
 			WithObject(
-				dag.TypeDef().WithObject("RedHatPackages").
+				dag.TypeDef().WithObject("RedhatMinimalPackages").
 					WithFunction(
 						dag.Function("Installed",
 							dag.TypeDef().WithObject("Container")).

@@ -14,7 +14,7 @@ func New() *Golang {
 
 func (golang *Golang) Configuration(container *Container) *Container {
 	container = container.
-		With(dag.Redhat().Packages([]string{
+		With(dag.Redhat().Minimal().Packages([]string{
 			"go",
 			"git",
 		}).Installed).
@@ -26,7 +26,7 @@ func (golang *Golang) Configuration(container *Container) *Container {
 }
 
 func (golang *Golang) Container() *Container {
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Minimal().Container().
 		With(golang.Configuration)
 
 	return container

@@ -22,8 +22,8 @@ func New(
 
 func (nodejs *Nodejs) Configuration(container *Container) *Container {
 	container = container.
-		With(dag.Redhat().Module("nodejs:20").Enabled).
-		With(dag.Redhat().Packages([]string{
+		With(dag.Redhat().Minimal().Module("nodejs:20").Enabled).
+		With(dag.Redhat().Minimal().Packages([]string{
 			"npm",
 		}).Installed).
 		WithMountedCache(CacheDir, dag.CacheVolume("nodejs")).
@@ -38,7 +38,7 @@ func (nodejs *Nodejs) Configuration(container *Container) *Container {
 }
 
 func (nodejs *Nodejs) Container() *Container {
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Minimal().Container().
 		With(nodejs.Configuration)
 
 	return container

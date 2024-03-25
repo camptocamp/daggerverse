@@ -35,7 +35,7 @@ func New(
 	return sass, nil
 }
 
-func (sass *Sass) Tarball() *Directory {
+func (sass *Sass) Files() *Directory {
 	platform := strings.Split(string(sass.Platform), "/")
 
 	os := platform[0]
@@ -73,7 +73,7 @@ func (sass *Sass) Directory(
 
 	directory := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
-			WithDirectory("libexec/sass", sass.Tarball()).
+			WithDirectory("libexec/sass", sass.Files()).
 			WithFile("bin/sass", dag.CurrentModule().Source().File("bin/sass"), DirectoryWithFileOpts{Permissions: 0o755}),
 		)
 
@@ -88,7 +88,7 @@ func (sass *Sass) Configuration(container *Container) *Container {
 }
 
 func (sass *Sass) Container() *Container {
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Micro().Container().
 		With(sass.Configuration).
 		WithEntrypoint([]string{"sass"}).
 		WithoutDefaultArgs()

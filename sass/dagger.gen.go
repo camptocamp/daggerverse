@@ -105,11 +105,17 @@ type PortID = dagger.PortID
 // The `RedhatID` scalar type represents an identifier for an object of type Redhat.
 type RedhatID = dagger.RedhatID
 
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID = dagger.RedhatRedHatModuleID
+// The `RedhatMicroID` scalar type represents an identifier for an object of type RedhatMicro.
+type RedhatMicroID = dagger.RedhatMicroID
 
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID = dagger.RedhatRedHatPackagesID
+// The `RedhatMinimalID` scalar type represents an identifier for an object of type RedhatMinimal.
+type RedhatMinimalID = dagger.RedhatMinimalID
+
+// The `RedhatMinimalModuleID` scalar type represents an identifier for an object of type RedhatMinimalModule.
+type RedhatMinimalModuleID = dagger.RedhatMinimalModuleID
+
+// The `RedhatMinimalPackagesID` scalar type represents an identifier for an object of type RedhatMinimalPackages.
+type RedhatMinimalPackagesID = dagger.RedhatMinimalPackagesID
 
 // The `SecretID` scalar type represents an identifier for an object of type Secret.
 type SecretID = dagger.SecretID
@@ -379,9 +385,13 @@ type SecretOpts = dagger.SecretOpts
 
 type Redhat = dagger.Redhat
 
-type RedhatRedHatModule = dagger.RedhatRedHatModule
+type RedhatMicro = dagger.RedhatMicro
 
-type RedhatRedHatPackages = dagger.RedhatRedHatPackages
+type RedhatMinimal = dagger.RedhatMinimal
+
+type RedhatMinimalModule = dagger.RedhatMinimalModule
+
+type RedhatMinimalPackages = dagger.RedhatMinimalPackages
 
 // A reference to a secret value, which can be handled more safely than the value itself.
 type Secret = dagger.Secret
@@ -609,13 +619,13 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 	switch parentName {
 	case "Sass":
 		switch fnName {
-		case "Tarball":
+		case "Files":
 			var parent Sass
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
-			return (*Sass).Tarball(&parent), nil
+			return (*Sass).Files(&parent), nil
 		case "Directory":
 			var parent Sass
 			err = json.Unmarshal(parentJSON, &parent)
@@ -680,7 +690,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 			WithObject(
 				dag.TypeDef().WithObject("Sass").
 					WithFunction(
-						dag.Function("Tarball",
+						dag.Function("Files",
 							dag.TypeDef().WithObject("Directory"))).
 					WithFunction(
 						dag.Function("Directory",

@@ -111,11 +111,17 @@ type PortID = dagger.PortID
 // The `RedhatID` scalar type represents an identifier for an object of type Redhat.
 type RedhatID = dagger.RedhatID
 
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID = dagger.RedhatRedHatModuleID
+// The `RedhatMicroID` scalar type represents an identifier for an object of type RedhatMicro.
+type RedhatMicroID = dagger.RedhatMicroID
 
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID = dagger.RedhatRedHatPackagesID
+// The `RedhatMinimalID` scalar type represents an identifier for an object of type RedhatMinimal.
+type RedhatMinimalID = dagger.RedhatMinimalID
+
+// The `RedhatMinimalModuleID` scalar type represents an identifier for an object of type RedhatMinimalModule.
+type RedhatMinimalModuleID = dagger.RedhatMinimalModuleID
+
+// The `RedhatMinimalPackagesID` scalar type represents an identifier for an object of type RedhatMinimalPackages.
+type RedhatMinimalPackagesID = dagger.RedhatMinimalPackagesID
 
 // The `SecretID` scalar type represents an identifier for an object of type Secret.
 type SecretID = dagger.SecretID
@@ -392,9 +398,13 @@ type SecretOpts = dagger.SecretOpts
 
 type Redhat = dagger.Redhat
 
-type RedhatRedHatModule = dagger.RedhatRedHatModule
+type RedhatMicro = dagger.RedhatMicro
 
-type RedhatRedHatPackages = dagger.RedhatRedHatPackages
+type RedhatMinimal = dagger.RedhatMinimal
+
+type RedhatMinimalModule = dagger.RedhatMinimalModule
+
+type RedhatMinimalPackages = dagger.RedhatMinimalPackages
 
 // A reference to a secret value, which can be handled more safely than the value itself.
 type Secret = dagger.Secret
@@ -553,18 +563,21 @@ func (r *Presentation) UnmarshalJSON(bs []byte) error {
 
 func (r PresentationBuilder) MarshalJSON() ([]byte, error) {
 	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
+		Directory     *Directory
+		Npmrc         *Secret
+		Configuration PresentationBuilderConfiguration
 	}
 	concrete.Directory = r.Directory
 	concrete.Npmrc = r.Npmrc
+	concrete.Configuration = r.Configuration
 	return json.Marshal(&concrete)
 }
 
 func (r *PresentationBuilder) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
-		Directory *Directory
-		Npmrc     *Secret
+		Directory     *Directory
+		Npmrc         *Secret
+		Configuration PresentationBuilderConfiguration
 	}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
@@ -572,6 +585,7 @@ func (r *PresentationBuilder) UnmarshalJSON(bs []byte) error {
 	}
 	r.Directory = concrete.Directory
 	r.Npmrc = concrete.Npmrc
+	r.Configuration = concrete.Configuration
 	return nil
 }
 
@@ -683,7 +697,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg npmrc", err))
 				}
 			}
-			return (*Presentation).Builder(&parent, directory, npmrc), nil
+			return (*Presentation).Builder(&parent, ctx, directory, npmrc)
 		case "":
 			var parent Presentation
 			err = json.Unmarshal(parentJSON, &parent)

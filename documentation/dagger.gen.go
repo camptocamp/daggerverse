@@ -117,11 +117,17 @@ type PortID = dagger.PortID
 // The `RedhatID` scalar type represents an identifier for an object of type Redhat.
 type RedhatID = dagger.RedhatID
 
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID = dagger.RedhatRedHatModuleID
+// The `RedhatMicroID` scalar type represents an identifier for an object of type RedhatMicro.
+type RedhatMicroID = dagger.RedhatMicroID
 
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID = dagger.RedhatRedHatPackagesID
+// The `RedhatMinimalID` scalar type represents an identifier for an object of type RedhatMinimal.
+type RedhatMinimalID = dagger.RedhatMinimalID
+
+// The `RedhatMinimalModuleID` scalar type represents an identifier for an object of type RedhatMinimalModule.
+type RedhatMinimalModuleID = dagger.RedhatMinimalModuleID
+
+// The `RedhatMinimalPackagesID` scalar type represents an identifier for an object of type RedhatMinimalPackages.
+type RedhatMinimalPackagesID = dagger.RedhatMinimalPackagesID
 
 // The `SecretID` scalar type represents an identifier for an object of type Secret.
 type SecretID = dagger.SecretID
@@ -408,9 +414,13 @@ type SecretOpts = dagger.SecretOpts
 
 type Redhat = dagger.Redhat
 
-type RedhatRedHatModule = dagger.RedhatRedHatModule
+type RedhatMicro = dagger.RedhatMicro
 
-type RedhatRedHatPackages = dagger.RedhatRedHatPackages
+type RedhatMinimal = dagger.RedhatMinimal
+
+type RedhatMinimalModule = dagger.RedhatMinimalModule
+
+type RedhatMinimalPackages = dagger.RedhatMinimalPackages
 
 // A reference to a secret value, which can be handled more safely than the value itself.
 type Secret = dagger.Secret
@@ -569,25 +579,25 @@ func (r *Documentation) UnmarshalJSON(bs []byte) error {
 
 func (r DocumentationBuilder) MarshalJSON() ([]byte, error) {
 	var concrete struct {
-		Directory   *Directory
-		HugoVersion string
+		Directory     *Directory
+		Configuration DocumentationBuilderConfiguration
 	}
 	concrete.Directory = r.Directory
-	concrete.HugoVersion = r.HugoVersion
+	concrete.Configuration = r.Configuration
 	return json.Marshal(&concrete)
 }
 
 func (r *DocumentationBuilder) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
-		Directory   *Directory
-		HugoVersion string
+		Directory     *Directory
+		Configuration DocumentationBuilderConfiguration
 	}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
 		return err
 	}
 	r.Directory = concrete.Directory
-	r.HugoVersion = concrete.HugoVersion
+	r.Configuration = concrete.Configuration
 	return nil
 }
 
@@ -670,32 +680,6 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
-	case "DocumentationBuild":
-		switch fnName {
-		case "Directory":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Directory(&parent), nil
-		case "Container":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Container(&parent), nil
-		case "Server":
-			var parent DocumentationBuild
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return (*DocumentationBuild).Server(&parent), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
 	case "Documentation":
 		switch fnName {
 		case "Init":
@@ -755,6 +739,32 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
+	case "DocumentationBuild":
+		switch fnName {
+		case "Directory":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Directory(&parent), nil
+		case "Container":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Container(&parent), nil
+		case "Server":
+			var parent DocumentationBuild
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			return (*DocumentationBuild).Server(&parent), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
 	case "":
 		return dag.Module().
 			WithObject(
@@ -788,8 +798,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 							dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Server",
-							dag.TypeDef().WithObject("Service"))).
-					WithField("Builder", dag.TypeDef().WithObject("Container"))), nil
+							dag.TypeDef().WithObject("Service")))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

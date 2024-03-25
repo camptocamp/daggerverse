@@ -7,6 +7,9 @@
     "autoprefixer": "^10",
     "postcss-cli": "^11"
   },
+  "hugo": {
+    "version": "0.124.1"
+  },
   "scripts": {
     "build": "hugo",
     "serve": "hugo server --bind 0.0.0.0",

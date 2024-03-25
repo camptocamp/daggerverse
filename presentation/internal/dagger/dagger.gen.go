@@ -200,11 +200,17 @@ type PortID string
 // The `RedhatID` scalar type represents an identifier for an object of type Redhat.
 type RedhatID string
 
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID string
+// The `RedhatMicroID` scalar type represents an identifier for an object of type RedhatMicro.
+type RedhatMicroID string
 
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID string
+// The `RedhatMinimalID` scalar type represents an identifier for an object of type RedhatMinimal.
+type RedhatMinimalID string
+
+// The `RedhatMinimalModuleID` scalar type represents an identifier for an object of type RedhatMinimalModule.
+type RedhatMinimalModuleID string
+
+// The `RedhatMinimalPackagesID` scalar type represents an identifier for an object of type RedhatMinimalPackages.
+type RedhatMinimalPackagesID string
 
 // The `SecretID` scalar type represents an identifier for an object of type Secret.
 type SecretID string
@@ -5971,22 +5977,42 @@ func (r *Client) LoadRedhatFromID(id RedhatID) *Redhat {
 	}
 }
 
-// Load a RedhatRedHatModule from its ID.
-func (r *Client) LoadRedhatRedHatModuleFromID(id RedhatRedHatModuleID) *RedhatRedHatModule {
-	q := r.query.Select("loadRedhatRedHatModuleFromID")
+// Load a RedhatMicro from its ID.
+func (r *Client) LoadRedhatMicroFromID(id RedhatMicroID) *RedhatMicro {
+	q := r.query.Select("loadRedhatMicroFromID")
 	q = q.Arg("id", id)
 
-	return &RedhatRedHatModule{
+	return &RedhatMicro{
 		query: q,
 	}
 }
 
-// Load a RedhatRedHatPackages from its ID.
-func (r *Client) LoadRedhatRedHatPackagesFromID(id RedhatRedHatPackagesID) *RedhatRedHatPackages {
-	q := r.query.Select("loadRedhatRedHatPackagesFromID")
+// Load a RedhatMinimal from its ID.
+func (r *Client) LoadRedhatMinimalFromID(id RedhatMinimalID) *RedhatMinimal {
+	q := r.query.Select("loadRedhatMinimalFromID")
 	q = q.Arg("id", id)
 
-	return &RedhatRedHatPackages{
+	return &RedhatMinimal{
+		query: q,
+	}
+}
+
+// Load a RedhatMinimalModule from its ID.
+func (r *Client) LoadRedhatMinimalModuleFromID(id RedhatMinimalModuleID) *RedhatMinimalModule {
+	q := r.query.Select("loadRedhatMinimalModuleFromID")
+	q = q.Arg("id", id)
+
+	return &RedhatMinimalModule{
+		query: q,
+	}
+}
+
+// Load a RedhatMinimalPackages from its ID.
+func (r *Client) LoadRedhatMinimalPackagesFromID(id RedhatMinimalPackagesID) *RedhatMinimalPackages {
+	q := r.query.Select("loadRedhatMinimalPackagesFromID")
+	q = q.Arg("id", id)
+
+	return &RedhatMinimalPackages{
 		query: q,
 	}
 }
@@ -6218,14 +6244,6 @@ func (r *Redhat) WithGraphQLQuery(q *querybuilder.Selection) *Redhat {
 	}
 }
 
-func (r *Redhat) Container() *Container {
-	q := r.query.Select("container")
-
-	return &Container{
-		query: q,
-	}
-}
-
 // A unique identifier for this Redhat.
 func (r *Redhat) ID(ctx context.Context) (RedhatID, error) {
 	if r.id != nil {
@@ -6275,38 +6293,192 @@ func (r *Redhat) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
-func (r *Redhat) Module(name string) *RedhatRedHatModule {
+func (r *Redhat) Micro() *RedhatMicro {
+	q := r.query.Select("micro")
+
+	return &RedhatMicro{
+		query: q,
+	}
+}
+
+func (r *Redhat) Minimal() *RedhatMinimal {
+	q := r.query.Select("minimal")
+
+	return &RedhatMinimal{
+		query: q,
+	}
+}
+
+type RedhatMicro struct {
+	query *querybuilder.Selection
+
+	id *RedhatMicroID
+}
+
+func (r *RedhatMicro) WithGraphQLQuery(q *querybuilder.Selection) *RedhatMicro {
+	return &RedhatMicro{
+		query: q,
+	}
+}
+
+func (r *RedhatMicro) Container() *Container {
+	q := r.query.Select("container")
+
+	return &Container{
+		query: q,
+	}
+}
+
+// A unique identifier for this RedhatMicro.
+func (r *RedhatMicro) ID(ctx context.Context) (RedhatMicroID, error) {
+	if r.id != nil {
+		return *r.id, nil
+	}
+	q := r.query.Select("id")
+
+	var response RedhatMicroID
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
+func (r *RedhatMicro) XXX_GraphQLType() string {
+	return "RedhatMicro"
+}
+
+// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
+func (r *RedhatMicro) XXX_GraphQLIDType() string {
+	return "RedhatMicroID"
+}
+
+// XXX_GraphQLID is an internal function. It returns the underlying type ID
+func (r *RedhatMicro) XXX_GraphQLID(ctx context.Context) (string, error) {
+	id, err := r.ID(ctx)
+	if err != nil {
+		return "", err
+	}
+	return string(id), nil
+}
+
+func (r *RedhatMicro) MarshalJSON() ([]byte, error) {
+	id, err := r.ID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(id)
+}
+func (r *RedhatMicro) UnmarshalJSON(bs []byte) error {
+	var id string
+	err := json.Unmarshal(bs, &id)
+	if err != nil {
+		return err
+	}
+	*r = *dag.LoadRedhatMicroFromID(RedhatMicroID(id))
+	return nil
+}
+
+type RedhatMinimal struct {
+	query *querybuilder.Selection
+
+	id *RedhatMinimalID
+}
+
+func (r *RedhatMinimal) WithGraphQLQuery(q *querybuilder.Selection) *RedhatMinimal {
+	return &RedhatMinimal{
+		query: q,
+	}
+}
+
+func (r *RedhatMinimal) Container() *Container {
+	q := r.query.Select("container")
+
+	return &Container{
+		query: q,
+	}
+}
+
+// A unique identifier for this RedhatMinimal.
+func (r *RedhatMinimal) ID(ctx context.Context) (RedhatMinimalID, error) {
+	if r.id != nil {
+		return *r.id, nil
+	}
+	q := r.query.Select("id")
+
+	var response RedhatMinimalID
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// XXX_GraphQLType is an internal function. It returns the native GraphQL type name
+func (r *RedhatMinimal) XXX_GraphQLType() string {
+	return "RedhatMinimal"
+}
+
+// XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
+func (r *RedhatMinimal) XXX_GraphQLIDType() string {
+	return "RedhatMinimalID"
+}
+
+// XXX_GraphQLID is an internal function. It returns the underlying type ID
+func (r *RedhatMinimal) XXX_GraphQLID(ctx context.Context) (string, error) {
+	id, err := r.ID(ctx)
+	if err != nil {
+		return "", err
+	}
+	return string(id), nil
+}
+
+func (r *RedhatMinimal) MarshalJSON() ([]byte, error) {
+	id, err := r.ID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(id)
+}
+func (r *RedhatMinimal) UnmarshalJSON(bs []byte) error {
+	var id string
+	err := json.Unmarshal(bs, &id)
+	if err != nil {
+		return err
+	}
+	*r = *dag.LoadRedhatMinimalFromID(RedhatMinimalID(id))
+	return nil
+}
+
+func (r *RedhatMinimal) Module(name string) *RedhatMinimalModule {
 	q := r.query.Select("module")
 	q = q.Arg("name", name)
 
-	return &RedhatRedHatModule{
+	return &RedhatMinimalModule{
 		query: q,
 	}
 }
 
-func (r *Redhat) Packages(names []string) *RedhatRedHatPackages {
+func (r *RedhatMinimal) Packages(names []string) *RedhatMinimalPackages {
 	q := r.query.Select("packages")
 	q = q.Arg("names", names)
 
-	return &RedhatRedHatPackages{
+	return &RedhatMinimalPackages{
 		query: q,
 	}
 }
 
-type RedhatRedHatModule struct {
+type RedhatMinimalModule struct {
 	query *querybuilder.Selection
 
-	id   *RedhatRedHatModuleID
+	id   *RedhatMinimalModuleID
 	name *string
 }
 
-func (r *RedhatRedHatModule) WithGraphQLQuery(q *querybuilder.Selection) *RedhatRedHatModule {
-	return &RedhatRedHatModule{
+func (r *RedhatMinimalModule) WithGraphQLQuery(q *querybuilder.Selection) *RedhatMinimalModule {
+	return &RedhatMinimalModule{
 		query: q,
 	}
 }
 
-func (r *RedhatRedHatModule) Enabled(container *Container) *Container {
+func (r *RedhatMinimalModule) Enabled(container *Container) *Container {
 	assertNotNil("container", container)
 	q := r.query.Select("enabled")
 	q = q.Arg("container", container)
@@ -6316,31 +6488,31 @@ func (r *RedhatRedHatModule) Enabled(container *Container) *Container {
 	}
 }
 
-// A unique identifier for this RedhatRedHatModule.
-func (r *RedhatRedHatModule) ID(ctx context.Context) (RedhatRedHatModuleID, error) {
+// A unique identifier for this RedhatMinimalModule.
+func (r *RedhatMinimalModule) ID(ctx context.Context) (RedhatMinimalModuleID, error) {
 	if r.id != nil {
 		return *r.id, nil
 	}
 	q := r.query.Select("id")
 
-	var response RedhatRedHatModuleID
+	var response RedhatMinimalModuleID
 
 	q = q.Bind(&response)
 	return response, q.Execute(ctx)
 }
 
 // XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *RedhatRedHatModule) XXX_GraphQLType() string {
-	return "RedhatRedHatModule"
+func (r *RedhatMinimalModule) XXX_GraphQLType() string {
+	return "RedhatMinimalModule"
 }
 
 // XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *RedhatRedHatModule) XXX_GraphQLIDType() string {
-	return "RedhatRedHatModuleID"
+func (r *RedhatMinimalModule) XXX_GraphQLIDType() string {
+	return "RedhatMinimalModuleID"
 }
 
 // XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *RedhatRedHatModule) XXX_GraphQLID(ctx context.Context) (string, error) {
+func (r *RedhatMinimalModule) XXX_GraphQLID(ctx context.Context) (string, error) {
 	id, err := r.ID(ctx)
 	if err != nil {
 		return "", err
@@ -6348,24 +6520,24 @@ func (r *RedhatRedHatModule) XXX_GraphQLID(ctx context.Context) (string, error) 
 	return string(id), nil
 }
 
-func (r *RedhatRedHatModule) MarshalJSON() ([]byte, error) {
+func (r *RedhatMinimalModule) MarshalJSON() ([]byte, error) {
 	id, err := r.ID(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(id)
 }
-func (r *RedhatRedHatModule) UnmarshalJSON(bs []byte) error {
+func (r *RedhatMinimalModule) UnmarshalJSON(bs []byte) error {
 	var id string
 	err := json.Unmarshal(bs, &id)
 	if err != nil {
 		return err
 	}
-	*r = *dag.LoadRedhatRedHatModuleFromID(RedhatRedHatModuleID(id))
+	*r = *dag.LoadRedhatMinimalModuleFromID(RedhatMinimalModuleID(id))
 	return nil
 }
 
-func (r *RedhatRedHatModule) Name(ctx context.Context) (string, error) {
+func (r *RedhatMinimalModule) Name(ctx context.Context) (string, error) {
 	if r.name != nil {
 		return *r.name, nil
 	}
@@ -6377,43 +6549,43 @@ func (r *RedhatRedHatModule) Name(ctx context.Context) (string, error) {
 	return response, q.Execute(ctx)
 }
 
-type RedhatRedHatPackages struct {
+type RedhatMinimalPackages struct {
 	query *querybuilder.Selection
 
-	id *RedhatRedHatPackagesID
+	id *RedhatMinimalPackagesID
 }
 
-func (r *RedhatRedHatPackages) WithGraphQLQuery(q *querybuilder.Selection) *RedhatRedHatPackages {
-	return &RedhatRedHatPackages{
+func (r *RedhatMinimalPackages) WithGraphQLQuery(q *querybuilder.Selection) *RedhatMinimalPackages {
+	return &RedhatMinimalPackages{
 		query: q,
 	}
 }
 
-// A unique identifier for this RedhatRedHatPackages.
-func (r *RedhatRedHatPackages) ID(ctx context.Context) (RedhatRedHatPackagesID, error) {
+// A unique identifier for this RedhatMinimalPackages.
+func (r *RedhatMinimalPackages) ID(ctx context.Context) (RedhatMinimalPackagesID, error) {
 	if r.id != nil {
 		return *r.id, nil
 	}
 	q := r.query.Select("id")
 
-	var response RedhatRedHatPackagesID
+	var response RedhatMinimalPackagesID
 
 	q = q.Bind(&response)
 	return response, q.Execute(ctx)
 }
 
 // XXX_GraphQLType is an internal function. It returns the native GraphQL type name
-func (r *RedhatRedHatPackages) XXX_GraphQLType() string {
-	return "RedhatRedHatPackages"
+func (r *RedhatMinimalPackages) XXX_GraphQLType() string {
+	return "RedhatMinimalPackages"
 }
 
 // XXX_GraphQLIDType is an internal function. It returns the native GraphQL type name for the ID of this object
-func (r *RedhatRedHatPackages) XXX_GraphQLIDType() string {
-	return "RedhatRedHatPackagesID"
+func (r *RedhatMinimalPackages) XXX_GraphQLIDType() string {
+	return "RedhatMinimalPackagesID"
 }
 
 // XXX_GraphQLID is an internal function. It returns the underlying type ID
-func (r *RedhatRedHatPackages) XXX_GraphQLID(ctx context.Context) (string, error) {
+func (r *RedhatMinimalPackages) XXX_GraphQLID(ctx context.Context) (string, error) {
 	id, err := r.ID(ctx)
 	if err != nil {
 		return "", err
@@ -6421,24 +6593,24 @@ func (r *RedhatRedHatPackages) XXX_GraphQLID(ctx context.Context) (string, error
 	return string(id), nil
 }
 
-func (r *RedhatRedHatPackages) MarshalJSON() ([]byte, error) {
+func (r *RedhatMinimalPackages) MarshalJSON() ([]byte, error) {
 	id, err := r.ID(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(id)
 }
-func (r *RedhatRedHatPackages) UnmarshalJSON(bs []byte) error {
+func (r *RedhatMinimalPackages) UnmarshalJSON(bs []byte) error {
 	var id string
 	err := json.Unmarshal(bs, &id)
 	if err != nil {
 		return err
 	}
-	*r = *dag.LoadRedhatRedHatPackagesFromID(RedhatRedHatPackagesID(id))
+	*r = *dag.LoadRedhatMinimalPackagesFromID(RedhatMinimalPackagesID(id))
 	return nil
 }
 
-func (r *RedhatRedHatPackages) Installed(container *Container) *Container {
+func (r *RedhatMinimalPackages) Installed(container *Container) *Container {
 	assertNotNil("container", container)
 	q := r.query.Select("installed")
 	q = q.Arg("container", container)
@@ -6448,7 +6620,7 @@ func (r *RedhatRedHatPackages) Installed(container *Container) *Container {
 	}
 }
 
-func (r *RedhatRedHatPackages) Names(ctx context.Context) ([]string, error) {
+func (r *RedhatMinimalPackages) Names(ctx context.Context) ([]string, error) {
 	q := r.query.Select("names")
 
 	var response []string

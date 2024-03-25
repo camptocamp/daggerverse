@@ -2,12 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
-)
-
-const (
-	HugoVersionFilename string = ".hugo-version"
 )
 
 type Documentation struct{}
@@ -29,22 +25,39 @@ type DocumentationBuilder struct {
 	// +private
 	Directory *Directory
 	// +private
-	HugoVersion string
+	Configuration DocumentationBuilderConfiguration
+}
+
+type DocumentationBuilderConfiguration struct {
+	Hugo struct {
+		Version string
+	}
 }
 
 func (documentation *Documentation) Builder(
 	ctx context.Context,
 	directory *Directory,
 ) (*DocumentationBuilder, error) {
-	hugoVersion, err := directory.File(HugoVersionFilename).Contents(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to read Hugo version from %q: %w", HugoVersionFilename, err)
-	}
+	const packageJsonFilename string = "package.json"
 
 	builder := &DocumentationBuilder{
-		Directory:   directory,
-		HugoVersion: strings.TrimSpace(hugoVersion),
+		Directory: directory,
+	}
+
+	packageJsonString, err := directory.File(packageJsonFilename).Contents(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %q file: %w", packageJsonFilename, err)
+	}
+
+	err = json.Unmarshal([]byte(packageJsonString), &builder.Configuration)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %q file: %w", packageJsonFilename, err)
+	}
+
+	if builder.Configuration.Hugo.Version == "" {
+		return nil, fmt.Errorf("Hugo version is not set in %q file", packageJsonFilename)
 	}
 
 	return builder, nil
@@ -53,9 +66,10 @@ func (documentation *Documentation) Builder(
 func (builder *DocumentationBuilder) Container() *Container {
 	kroki := dag.Kroki()
 
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Minimal().Container().
 		With(dag.Nodejs().Configuration).
-		With(dag.Hugo(builder.HugoVersion).Configuration).
+		With(dag.Golang().Configuration).
+		With(dag.Hugo(builder.Configuration.Hugo.Version).Configuration).
 		WithMountedDirectory(".", builder.Directory).
 		WithExec([]string{"npm clean-install"}).
 		WithEntrypoint([]string{"npm", "run", "all"}).

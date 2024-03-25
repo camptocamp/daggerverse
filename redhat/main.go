@@ -5,17 +5,30 @@ import (
 )
 
 const (
-	ImageRegistry   string = "registry.access.redhat.com"
-	ImageRepository string = "ubi9-minimal"
-	ImageTag        string = "9.3-1552"
-	ImageDigest     string = "sha256:582e18f13291d7c686ec4e6e92d20b24c62ae0fc72767c46f30a69b1a6198055"
+	ImageRegistry string = "registry.access.redhat.com"
+
+	MicroImageRepository string = "ubi9-micro"
+	MicroImageTag        string = "9.3-15"
+	MicroImageDigest     string = "sha256:8e33df2832f039b4b1adc53efd783f9404449994b46ae321ee4a0bf4499d5c42"
+
+	MinimalImageRepository string = "ubi9-minimal"
+	MinimalImageTag        string = "9.3-1552"
+	MinimalImageDigest     string = "sha256:582e18f13291d7c686ec4e6e92d20b24c62ae0fc72767c46f30a69b1a6198055"
 )
 
 type Redhat struct{}
 
-func (redhat *Redhat) Container() *Container {
+func (redhat *Redhat) Micro() *RedhatMicro {
+	redhatMicro := &RedhatMicro{}
+
+	return redhatMicro
+}
+
+type RedhatMicro struct{}
+
+func (redhat *RedhatMicro) Container() *Container {
 	container := dag.Container().
-		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
+		From(ImageRegistry + "/" + MicroImageRepository + ":" + MicroImageTag + "@" + MicroImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).
 		WithoutDefaultArgs().
 		WithWorkdir("/home")
@@ -23,38 +36,56 @@ func (redhat *Redhat) Container() *Container {
 	return container
 }
 
-type RedHatModule struct {
+func (redhat *Redhat) Minimal() *RedhatMinimal {
+	redhatMinimal := &RedhatMinimal{}
+
+	return redhatMinimal
+}
+
+type RedhatMinimal struct{}
+
+func (redhat *RedhatMinimal) Container() *Container {
+	container := dag.Container().
+		From(ImageRegistry + "/" + MinimalImageRepository + ":" + MinimalImageTag + "@" + MinimalImageDigest).
+		WithEntrypoint([]string{"sh", "-c"}).
+		WithoutDefaultArgs().
+		WithWorkdir("/home")
+
+	return container
+}
+
+type RedhatMinimalModule struct {
 	Name string
 }
 
-func (redhat *Redhat) Module(name string) *RedHatModule {
-	module := &RedHatModule{
+func (redhat *RedhatMinimal) Module(name string) *RedhatMinimalModule {
+	module := &RedhatMinimalModule{
 		Name: name,
 	}
 
 	return module
 }
 
-func (module *RedHatModule) Enabled(container *Container) *Container {
+func (module *RedhatMinimalModule) Enabled(container *Container) *Container {
 	container = container.
 		WithExec([]string{"microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
 
 	return container
 }
 
-type RedHatPackages struct {
+type RedhatMinimalPackages struct {
 	Names []string
 }
 
-func (redhat *Redhat) Packages(names []string) *RedHatPackages {
-	packages := &RedHatPackages{
+func (redhat *RedhatMinimal) Packages(names []string) *RedhatMinimalPackages {
+	packages := &RedhatMinimalPackages{
 		Names: names,
 	}
 
 	return packages
 }
 
-func (packages *RedHatPackages) Installed(container *Container) *Container {
+func (packages *RedhatMinimalPackages) Installed(container *Container) *Container {
 	container = container.
 		WithExec([]string{"microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
 

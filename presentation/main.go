@@ -1,5 +1,11 @@
 package main
 
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+)
+
 type Presentation struct{}
 
 func New() *Presentation {
@@ -20,24 +26,44 @@ type PresentationBuilder struct {
 	Directory *Directory
 	// +private
 	Npmrc *Secret
+	// +private
+	Configuration PresentationBuilderConfiguration
+}
+
+type PresentationBuilderConfiguration struct {
 }
 
 func (presentation *Presentation) Builder(
+	ctx context.Context,
 	directory *Directory,
 	npmrc *Secret,
-) *PresentationBuilder {
+) (*PresentationBuilder, error) {
+	const packageJsonFilename string = "package.json"
+
 	builder := &PresentationBuilder{
 		Directory: directory,
 		Npmrc:     npmrc,
 	}
 
-	return builder
+	packageJsonString, err := directory.File(packageJsonFilename).Contents(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %q file: %w", packageJsonFilename, err)
+	}
+
+	err = json.Unmarshal([]byte(packageJsonString), &builder.Configuration)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %q file: %w", packageJsonFilename, err)
+	}
+
+	return builder, nil
 }
 
 func (builder *PresentationBuilder) Container() *Container {
 	kroki := dag.Kroki()
 
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Minimal().Container().
 		With(dag.Nodejs(NodejsOpts{
 			Npmrc: builder.Npmrc,
 		}).Configuration).

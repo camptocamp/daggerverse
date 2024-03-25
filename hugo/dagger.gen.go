@@ -111,11 +111,17 @@ type PortID = dagger.PortID
 // The `RedhatID` scalar type represents an identifier for an object of type Redhat.
 type RedhatID = dagger.RedhatID
 
-// The `RedhatRedHatModuleID` scalar type represents an identifier for an object of type RedhatRedHatModule.
-type RedhatRedHatModuleID = dagger.RedhatRedHatModuleID
+// The `RedhatMicroID` scalar type represents an identifier for an object of type RedhatMicro.
+type RedhatMicroID = dagger.RedhatMicroID
 
-// The `RedhatRedHatPackagesID` scalar type represents an identifier for an object of type RedhatRedHatPackages.
-type RedhatRedHatPackagesID = dagger.RedhatRedHatPackagesID
+// The `RedhatMinimalID` scalar type represents an identifier for an object of type RedhatMinimal.
+type RedhatMinimalID = dagger.RedhatMinimalID
+
+// The `RedhatMinimalModuleID` scalar type represents an identifier for an object of type RedhatMinimalModule.
+type RedhatMinimalModuleID = dagger.RedhatMinimalModuleID
+
+// The `RedhatMinimalPackagesID` scalar type represents an identifier for an object of type RedhatMinimalPackages.
+type RedhatMinimalPackagesID = dagger.RedhatMinimalPackagesID
 
 // The `SassID` scalar type represents an identifier for an object of type Sass.
 type SassID = dagger.SassID
@@ -398,9 +404,13 @@ type SecretOpts = dagger.SecretOpts
 
 type Redhat = dagger.Redhat
 
-type RedhatRedHatModule = dagger.RedhatRedHatModule
+type RedhatMicro = dagger.RedhatMicro
 
-type RedhatRedHatPackages = dagger.RedhatRedHatPackages
+type RedhatMinimal = dagger.RedhatMinimal
+
+type RedhatMinimalModule = dagger.RedhatMinimalModule
+
+type RedhatMinimalPackages = dagger.RedhatMinimalPackages
 
 type Sass = dagger.Sass
 
@@ -550,28 +560,24 @@ func convertSlice[I any, O any](in []I, f func(I) O) []O {
 
 func (r Hugo) MarshalJSON() ([]byte, error) {
 	var concrete struct {
-		Version     string
-		SassVersion string
-		Platform    Platform
+		Version  string
+		Platform Platform
 	}
 	concrete.Version = r.Version
-	concrete.SassVersion = r.SassVersion
 	concrete.Platform = r.Platform
 	return json.Marshal(&concrete)
 }
 
 func (r *Hugo) UnmarshalJSON(bs []byte) error {
 	var concrete struct {
-		Version     string
-		SassVersion string
-		Platform    Platform
+		Version  string
+		Platform Platform
 	}
 	err := json.Unmarshal(bs, &concrete)
 	if err != nil {
 		return err
 	}
 	r.Version = concrete.Version
-	r.SassVersion = concrete.SassVersion
 	r.Platform = concrete.Platform
 	return nil
 }
@@ -692,13 +698,6 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg version", err))
 				}
 			}
-			var sassVersion string
-			if inputArgs["sassVersion"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["sassVersion"]), &sassVersion)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg sassVersion", err))
-				}
-			}
 			var platform Platform
 			if inputArgs["platform"] != nil {
 				err = json.Unmarshal([]byte(inputArgs["platform"]), &platform)
@@ -706,7 +705,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg platform", err))
 				}
 			}
-			return New(ctx, version, sassVersion, platform)
+			return New(ctx, version, platform)
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
@@ -729,13 +728,11 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 						dag.Function("Container",
 							dag.TypeDef().WithObject("Container"))).
 					WithField("Version", dag.TypeDef().WithKind(StringKind)).
-					WithField("SassVersion", dag.TypeDef().WithKind(StringKind)).
 					WithField("Platform", dag.TypeDef().WithKind(StringKind)).
 					WithConstructor(
 						dag.Function("New",
 							dag.TypeDef().WithObject("Hugo")).
 							WithArg("version", dag.TypeDef().WithKind(StringKind)).
-							WithArg("sassVersion", dag.TypeDef().WithKind(StringKind).WithOptional(true)).
 							WithArg("platform", dag.TypeDef().WithKind(StringKind).WithOptional(true)))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)

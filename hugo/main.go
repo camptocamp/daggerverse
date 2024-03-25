@@ -11,16 +11,13 @@ const (
 )
 
 type Hugo struct {
-	Version     string
-	SassVersion string
-	Platform    Platform
+	Version  string
+	Platform Platform
 }
 
 func New(
 	ctx context.Context,
 	version string,
-	// +optional
-	sassVersion string,
 	// +optional
 	platform Platform,
 ) (*Hugo, error) {
@@ -35,9 +32,8 @@ func New(
 	}
 
 	hugo := &Hugo{
-		Version:     version,
-		SassVersion: sassVersion,
-		Platform:    platform,
+		Version:  version,
+		Platform: platform,
 	}
 
 	return hugo, nil
@@ -81,21 +77,11 @@ func (hugo *Hugo) Directory(
 			WithFile("bin/hugo", hugo.File()),
 		)
 
-	if hugo.SassVersion != "" {
-		sass := dag.Sass(hugo.SassVersion, SassOpts{
-			Platform: string(hugo.Platform),
-		})
-
-		directory = directory.
-			WithDirectory("/", sass.Directory(SassDirectoryOpts{Prefix: prefix}))
-	}
-
 	return directory
 }
 
 func (hugo *Hugo) Configuration(container *Container) *Container {
 	container = container.
-		With(dag.Golang().Configuration).
 		WithDirectory("/", hugo.Directory("")).
 		WithMountedCache(CacheDir, dag.CacheVolume("hugo")).
 		WithEnvVariable("HUGO_CACHEDIR", CacheDir)
@@ -104,7 +90,7 @@ func (hugo *Hugo) Configuration(container *Container) *Container {
 }
 
 func (hugo *Hugo) Container() *Container {
-	container := dag.Redhat().Container().
+	container := dag.Redhat().Micro().Container().
 		With(hugo.Configuration).
 		WithEntrypoint([]string{"hugo"}).
 		WithoutDefaultArgs().
