@@ -71,7 +71,7 @@ func (builder *DocumentationBuilder) Container() *Container {
 		With(dag.Hugo(builder.Configuration.Hugo.Version).Configuration).
 		WithMountedDirectory(".", builder.Directory).
 		WithExec([]string{"npm clean-install"}).
-		WithEntrypoint([]string{"npm", "run", "all"}).
+		WithEntrypoint([]string{"npm", "run", "all", "--"}).
 		WithoutDefaultArgs()
 
 	// FIXME
