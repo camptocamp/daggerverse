@@ -10,6 +10,8 @@ asciidocExt:
     # kroki-server-url: 'http://kroki:8000'
     kroki-fetch-diagram: true
 
+    toc: true
     sectanchors: true
+    icons: font
 
   workingFolderCurrent: true

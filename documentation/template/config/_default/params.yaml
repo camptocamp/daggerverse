@@ -1,9 +1,10 @@
 ---
-offlineSearch: true
-
 ui:
   sidebar_menu_compact: true
   sidebar_menu_foldable: true
+
+offlineSearch: true
+prism_syntax_highlighting: true
 
 github_repo: &github_repo 'https://github.com/camptocamp/daggerverse'
 github_subdir: 'documentation/template'
