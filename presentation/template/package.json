@@ -1,16 +1,14 @@
 {
   "name": "presentation",
   "private": true,
-  "dependencies": {
-    "@asciidoctor/reveal.js": "^5",
-    "@camptocamp/reveal.js": "^5",
-    "@fortawesome/fontawesome-free": "^6",
-    "@highlightjs/cdn-assets": "^10",
-    "asciidoctor": "^3",
-    "asciidoctor-kroki": "^0.18"
-  },
   "devDependencies": {
-    "parcel": "^2"
+    "@asciidoctor/reveal.js": "^5.1.0",
+    "@camptocamp/reveal.js": "^5.0.5",
+    "@fortawesome/fontawesome-free": "^6.5.1",
+    "@highlightjs/cdn-assets": "^10.7.3",
+    "asciidoctor": "^3.0.4",
+    "asciidoctor-kroki": "^0.18.1",
+    "parcel": "^2.12.0"
   },
   "scripts": {
     "build": "npx asciidoctor-revealjs -r asciidoctor-kroki index.adoc",

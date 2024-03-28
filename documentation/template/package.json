@@ -1,11 +1,11 @@
 {
   "name": "documentation",
   "private": true,
-  "dependencies": {
-    "asciidoctor": "^3",
-    "asciidoctor-kroki": "^0.18",
-    "autoprefixer": "^10",
-    "postcss-cli": "^11"
+  "devDependencies": {
+    "asciidoctor": "^3.0.4",
+    "asciidoctor-kroki": "^0.18.1",
+    "autoprefixer": "^10.4.19",
+    "postcss-cli": "^11.0.0"
   },
   "hugo": {
     "version": "0.124.1"
