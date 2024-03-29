@@ -21,6 +21,8 @@ John Doe
 :revealjs_slideNumber: c/t
 :revealjs_hash: true
 :revealjs_mouseWheel: true
+// Enable keyboard macro
+:experimental: true
 
 Abstract
 
