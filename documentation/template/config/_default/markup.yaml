@@ -12,6 +12,9 @@ asciidocExt:
 
     toc: true
     sectanchors: true
-    icons: font
+    icons: 'font'
+
+    # Enable keyboard macro
+    experimental: true
 
   workingFolderCurrent: true
