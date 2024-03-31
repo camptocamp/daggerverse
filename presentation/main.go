@@ -64,7 +64,7 @@ type PresentationBuild struct {
 
 func (builder *PresentationBuilder) Build() *PresentationBuild {
 	build := &PresentationBuild{
-		Directory: builder.Container.WithExec(nil).Directory("dist"),
+		Directory: builder.WithExec(nil).Directory("dist"),
 	}
 
 	return build
