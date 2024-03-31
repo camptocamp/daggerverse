@@ -42,8 +42,5 @@ func (caddy *Caddy) Container() *Container {
 }
 
 func (caddy *Caddy) Server() *Service {
-	server := caddy.Container().
-		AsService()
-
-	return server
+	return caddy.Container().AsService()
 }

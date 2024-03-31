@@ -9,13 +9,7 @@ const (
 
 type Kroki struct{}
 
-func New() *Kroki {
-	kroki := &Kroki{}
-
-	return kroki
-}
-
-func (kroki *Kroki) Container() *Container {
+func (*Kroki) Container() *Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
 		WithExposedPort(8000)
@@ -24,8 +18,5 @@ func (kroki *Kroki) Container() *Container {
 }
 
 func (kroki *Kroki) Server() *Service {
-	server := kroki.Container().
-		AsService()
-
-	return server
+	return kroki.Container().AsService()
 }

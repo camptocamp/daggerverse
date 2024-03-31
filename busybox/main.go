@@ -9,7 +9,7 @@ const (
 
 type Busybox struct{}
 
-func (busybox *Busybox) Container() *Container {
+func (*Busybox) Container() *Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).

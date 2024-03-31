@@ -604,7 +604,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 	switch parentName {
 	case "Golang":
 		switch fnName {
-		case "Configuration":
+		case "Installation":
 			var parent Golang
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
@@ -617,7 +617,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
 				}
 			}
-			return (*Golang).Configuration(&parent, container), nil
+			return (*Golang).Installation(&parent, container), nil
 		case "Container":
 			var parent Golang
 			err = json.Unmarshal(parentJSON, &parent)
@@ -625,13 +625,6 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
 			return (*Golang).Container(&parent), nil
-		case "":
-			var parent Golang
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return New(), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
@@ -640,15 +633,12 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 			WithObject(
 				dag.TypeDef().WithObject("Golang").
 					WithFunction(
-						dag.Function("Configuration",
+						dag.Function("Installation",
 							dag.TypeDef().WithObject("Container")).
 							WithArg("container", dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Container",
-							dag.TypeDef().WithObject("Container"))).
-					WithConstructor(
-						dag.Function("New",
-							dag.TypeDef().WithObject("Golang")))), nil
+							dag.TypeDef().WithObject("Container")))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

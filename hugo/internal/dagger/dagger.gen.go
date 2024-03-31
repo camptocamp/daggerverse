@@ -3695,16 +3695,6 @@ func (r *Golang) WithGraphQLQuery(q *querybuilder.Selection) *Golang {
 	}
 }
 
-func (r *Golang) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Golang) Container() *Container {
 	q := r.query.Select("container")
 
@@ -3760,6 +3750,16 @@ func (r *Golang) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadGolangFromID(GolangID(id))
 	return nil
+}
+
+func (r *Golang) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 // A graphql input type, which is essentially just a group of named args.
@@ -5034,16 +5034,6 @@ func (r *Nodejs) WithGraphQLQuery(q *querybuilder.Selection) *Nodejs {
 	}
 }
 
-func (r *Nodejs) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Nodejs) Container() *Container {
 	q := r.query.Select("container")
 
@@ -5099,6 +5089,16 @@ func (r *Nodejs) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadNodejsFromID(NodejsID(id))
 	return nil
+}
+
+func (r *Nodejs) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 // A definition of a custom object defined in a Module.
@@ -6668,16 +6668,6 @@ func (r *Sass) WithGraphQLQuery(q *querybuilder.Selection) *Sass {
 	}
 }
 
-func (r *Sass) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Sass) Container() *Container {
 	q := r.query.Select("container")
 
@@ -6760,6 +6750,16 @@ func (r *Sass) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadSassFromID(SassID(id))
 	return nil
+}
+
+func (r *Sass) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 func (r *Sass) Platform(ctx context.Context) (string, error) {

@@ -645,25 +645,6 @@ func main() {
 
 func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName string, inputArgs map[string][]byte) (_ any, err error) {
 	switch parentName {
-	case "RedhatMinimalPackages":
-		switch fnName {
-		case "Installed":
-			var parent RedhatMinimalPackages
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			var container *Container
-			if inputArgs["container"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["container"]), &container)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
-				}
-			}
-			return (*RedhatMinimalPackages).Installed(&parent, container), nil
-		default:
-			return nil, fmt.Errorf("unknown function %s", fnName)
-		}
 	case "Redhat":
 		switch fnName {
 		case "Micro":
@@ -751,6 +732,25 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				}
 			}
 			return (*RedhatMinimalModule).Enabled(&parent, container), nil
+		default:
+			return nil, fmt.Errorf("unknown function %s", fnName)
+		}
+	case "RedhatMinimalPackages":
+		switch fnName {
+		case "Installed":
+			var parent RedhatMinimalPackages
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			var container *Container
+			if inputArgs["container"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["container"]), &container)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
+				}
+			}
+			return (*RedhatMinimalPackages).Installed(&parent, container), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}

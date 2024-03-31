@@ -20,7 +20,7 @@ func New(
 	return nodejs
 }
 
-func (nodejs *Nodejs) Configuration(container *Container) *Container {
+func (nodejs *Nodejs) Installation(container *Container) *Container {
 	container = container.
 		With(dag.Redhat().Minimal().Module("nodejs:20").Enabled).
 		With(dag.Redhat().Minimal().Packages([]string{
@@ -38,8 +38,5 @@ func (nodejs *Nodejs) Configuration(container *Container) *Container {
 }
 
 func (nodejs *Nodejs) Container() *Container {
-	container := dag.Redhat().Minimal().Container().
-		With(nodejs.Configuration)
-
-	return container
+	return dag.Redhat().Minimal().Container().With(nodejs.Installation)
 }

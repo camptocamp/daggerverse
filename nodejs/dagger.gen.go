@@ -610,7 +610,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 	switch parentName {
 	case "Nodejs":
 		switch fnName {
-		case "Configuration":
+		case "Installation":
 			var parent Nodejs
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
@@ -623,7 +623,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
 				}
 			}
-			return (*Nodejs).Configuration(&parent, container), nil
+			return (*Nodejs).Installation(&parent, container), nil
 		case "Container":
 			var parent Nodejs
 			err = json.Unmarshal(parentJSON, &parent)
@@ -653,7 +653,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 			WithObject(
 				dag.TypeDef().WithObject("Nodejs").
 					WithFunction(
-						dag.Function("Configuration",
+						dag.Function("Installation",
 							dag.TypeDef().WithObject("Container")).
 							WithArg("container", dag.TypeDef().WithObject("Container"))).
 					WithFunction(

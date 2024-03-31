@@ -8,41 +8,20 @@ import (
 
 type Presentation struct{}
 
-func New() *Presentation {
-	presentation := &Presentation{}
-
-	return presentation
-}
-
-func (presentation *Presentation) Init() *Directory {
-	template := dag.CurrentModule().Source().Directory("template")
-
-	return template
+func (*Presentation) Init() *Directory {
+	return dag.CurrentModule().Source().Directory("template")
 }
 
 type PresentationBuilder struct {
-	// +private
-	Directory *Directory
-	// +private
-	Npmrc *Secret
-	// +private
-	Configuration PresentationBuilderConfiguration
+	*Container
 }
 
-type PresentationBuilderConfiguration struct {
-}
-
-func (presentation *Presentation) Builder(
+func (*Presentation) Builder(
 	ctx context.Context,
 	directory *Directory,
 	npmrc *Secret,
 ) (*PresentationBuilder, error) {
 	const packageJsonFilename string = "package.json"
-
-	builder := &PresentationBuilder{
-		Directory: directory,
-		Npmrc:     npmrc,
-	}
 
 	packageJsonString, err := directory.File(packageJsonFilename).Contents(ctx)
 
@@ -50,23 +29,23 @@ func (presentation *Presentation) Builder(
 		return nil, fmt.Errorf("failed to read %q file: %w", packageJsonFilename, err)
 	}
 
-	err = json.Unmarshal([]byte(packageJsonString), &builder.Configuration)
+	var configuration struct{}
+
+	err = json.Unmarshal([]byte(packageJsonString), &configuration)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal %q file: %w", packageJsonFilename, err)
 	}
 
-	return builder, nil
-}
+	builder := &PresentationBuilder{}
 
-func (builder *PresentationBuilder) Container() *Container {
 	kroki := dag.Kroki()
 
-	container := dag.Redhat().Minimal().Container().
+	builder.Container = dag.Redhat().Minimal().Container().
 		With(dag.Nodejs(NodejsOpts{
-			Npmrc: builder.Npmrc,
-		}).Configuration).
-		WithMountedDirectory(".", builder.Directory).
+			Npmrc: npmrc,
+		}).Installation).
+		WithMountedDirectory(".", directory).
 		WithExec([]string{"npm clean-install"}).
 		WithEntrypoint([]string{"npm", "run", "all"}).
 		WithoutDefaultArgs()
@@ -76,37 +55,25 @@ func (builder *PresentationBuilder) Container() *Container {
 	//WithServiceBinding("kroki", kroki.Server())
 	_ = kroki
 
-	return container
+	return builder, nil
 }
 
 type PresentationBuild struct {
-	// +private
-	Builder *Container
+	*Directory
 }
 
 func (builder *PresentationBuilder) Build() *PresentationBuild {
 	build := &PresentationBuild{
-		Builder: builder.Container().WithExec(nil),
+		Directory: builder.Container.WithExec(nil).Directory("dist"),
 	}
 
 	return build
 }
 
-func (build *PresentationBuild) Directory() *Directory {
-	directory := build.Builder.Directory("dist")
-
-	return directory
-}
-
 func (build *PresentationBuild) Container() *Container {
-	directory := build.Directory()
-	container := dag.Caddy(directory).Container()
-
-	return container
+	return dag.Caddy(build.Directory).Container()
 }
 
 func (build *PresentationBuild) Server() *Service {
-	server := build.Container().AsService()
-
-	return server
+	return build.Container().AsService()
 }

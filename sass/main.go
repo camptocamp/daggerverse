@@ -80,7 +80,7 @@ func (sass *Sass) Directory(
 	return directory
 }
 
-func (sass *Sass) Configuration(container *Container) *Container {
+func (sass *Sass) Installation(container *Container) *Container {
 	container = container.
 		WithDirectory("/", sass.Directory(""))
 
@@ -89,7 +89,7 @@ func (sass *Sass) Configuration(container *Container) *Container {
 
 func (sass *Sass) Container() *Container {
 	container := dag.Redhat().Micro().Container().
-		With(sass.Configuration).
+		With(sass.Installation).
 		WithEntrypoint([]string{"sass"}).
 		WithoutDefaultArgs()
 

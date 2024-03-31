@@ -664,7 +664,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				}
 			}
 			return (*Hugo).Directory(&parent, prefix), nil
-		case "Configuration":
+		case "Installation":
 			var parent Hugo
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
@@ -677,7 +677,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg container", err))
 				}
 			}
-			return (*Hugo).Configuration(&parent, container), nil
+			return (*Hugo).Installation(&parent, container), nil
 		case "Container":
 			var parent Hugo
 			err = json.Unmarshal(parentJSON, &parent)
@@ -721,7 +721,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 							dag.TypeDef().WithObject("Directory")).
 							WithArg("prefix", dag.TypeDef().WithKind(StringKind).WithOptional(true))).
 					WithFunction(
-						dag.Function("Configuration",
+						dag.Function("Installation",
 							dag.TypeDef().WithObject("Container")).
 							WithArg("container", dag.TypeDef().WithObject("Container"))).
 					WithFunction(

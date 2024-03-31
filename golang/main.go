@@ -6,13 +6,7 @@ const (
 
 type Golang struct{}
 
-func New() *Golang {
-	golang := &Golang{}
-
-	return golang
-}
-
-func (golang *Golang) Configuration(container *Container) *Container {
+func (*Golang) Installation(container *Container) *Container {
 	container = container.
 		With(dag.Redhat().Minimal().Packages([]string{
 			"go",
@@ -26,8 +20,5 @@ func (golang *Golang) Configuration(container *Container) *Container {
 }
 
 func (golang *Golang) Container() *Container {
-	container := dag.Redhat().Minimal().Container().
-		With(golang.Configuration)
-
-	return container
+	return dag.Redhat().Minimal().Container().With(golang.Installation)
 }

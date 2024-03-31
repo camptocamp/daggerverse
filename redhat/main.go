@@ -18,15 +18,15 @@ const (
 
 type Redhat struct{}
 
-func (redhat *Redhat) Micro() *RedhatMicro {
+type RedhatMicro struct{}
+
+func (*Redhat) Micro() *RedhatMicro {
 	redhatMicro := &RedhatMicro{}
 
 	return redhatMicro
 }
 
-type RedhatMicro struct{}
-
-func (redhat *RedhatMicro) Container() *Container {
+func (*RedhatMicro) Container() *Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + MicroImageRepository + ":" + MicroImageTag + "@" + MicroImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).
@@ -36,15 +36,15 @@ func (redhat *RedhatMicro) Container() *Container {
 	return container
 }
 
-func (redhat *Redhat) Minimal() *RedhatMinimal {
+type RedhatMinimal struct{}
+
+func (*Redhat) Minimal() *RedhatMinimal {
 	redhatMinimal := &RedhatMinimal{}
 
 	return redhatMinimal
 }
 
-type RedhatMinimal struct{}
-
-func (redhat *RedhatMinimal) Container() *Container {
+func (*RedhatMinimal) Container() *Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + MinimalImageRepository + ":" + MinimalImageTag + "@" + MinimalImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).
@@ -58,7 +58,7 @@ type RedhatMinimalModule struct {
 	Name string
 }
 
-func (redhat *RedhatMinimal) Module(name string) *RedhatMinimalModule {
+func (*RedhatMinimal) Module(name string) *RedhatMinimalModule {
 	module := &RedhatMinimalModule{
 		Name: name,
 	}
@@ -67,17 +67,14 @@ func (redhat *RedhatMinimal) Module(name string) *RedhatMinimalModule {
 }
 
 func (module *RedhatMinimalModule) Enabled(container *Container) *Container {
-	container = container.
-		WithExec([]string{"microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
-
-	return container
+	return container.WithExec([]string{"microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
 }
 
 type RedhatMinimalPackages struct {
 	Names []string
 }
 
-func (redhat *RedhatMinimal) Packages(names []string) *RedhatMinimalPackages {
+func (*RedhatMinimal) Packages(names []string) *RedhatMinimalPackages {
 	packages := &RedhatMinimalPackages{
 		Names: names,
 	}
@@ -86,8 +83,5 @@ func (redhat *RedhatMinimal) Packages(names []string) *RedhatMinimalPackages {
 }
 
 func (packages *RedhatMinimalPackages) Installed(container *Container) *Container {
-	container = container.
-		WithExec([]string{"microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
-
-	return container
+	return container.WithExec([]string{"microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
 }

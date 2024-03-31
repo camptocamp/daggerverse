@@ -593,13 +593,6 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
 			}
 			return (*Kroki).Server(&parent), nil
-		case "":
-			var parent Kroki
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			return New(), nil
 		default:
 			return nil, fmt.Errorf("unknown function %s", fnName)
 		}
@@ -612,10 +605,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 							dag.TypeDef().WithObject("Container"))).
 					WithFunction(
 						dag.Function("Server",
-							dag.TypeDef().WithObject("Service"))).
-					WithConstructor(
-						dag.Function("New",
-							dag.TypeDef().WithObject("Kroki")))), nil
+							dag.TypeDef().WithObject("Service")))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

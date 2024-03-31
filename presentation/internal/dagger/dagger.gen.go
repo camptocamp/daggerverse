@@ -344,6 +344,14 @@ func (r *Caddy) Container() *Container {
 	}
 }
 
+func (r *Caddy) Directory() *Directory {
+	q := r.query.Select("directory")
+
+	return &Directory{
+		query: q,
+	}
+}
+
 // A unique identifier for this Caddy.
 func (r *Caddy) ID(ctx context.Context) (CaddyID, error) {
 	if r.id != nil {
@@ -5037,16 +5045,6 @@ func (r *Nodejs) WithGraphQLQuery(q *querybuilder.Selection) *Nodejs {
 	}
 }
 
-func (r *Nodejs) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Nodejs) Container() *Container {
 	q := r.query.Select("container")
 
@@ -5102,6 +5100,16 @@ func (r *Nodejs) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadNodejsFromID(NodejsID(id))
 	return nil
+}
+
+func (r *Nodejs) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 // A definition of a custom object defined in a Module.

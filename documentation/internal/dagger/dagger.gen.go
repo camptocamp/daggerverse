@@ -350,6 +350,14 @@ func (r *Caddy) Container() *Container {
 	}
 }
 
+func (r *Caddy) Directory() *Directory {
+	q := r.query.Select("directory")
+
+	return &Directory{
+		query: q,
+	}
+}
+
 // A unique identifier for this Caddy.
 func (r *Caddy) ID(ctx context.Context) (CaddyID, error) {
 	if r.id != nil {
@@ -3706,16 +3714,6 @@ func (r *Golang) WithGraphQLQuery(q *querybuilder.Selection) *Golang {
 	}
 }
 
-func (r *Golang) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Golang) Container() *Container {
 	q := r.query.Select("container")
 
@@ -3773,6 +3771,16 @@ func (r *Golang) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
+func (r *Golang) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
+}
+
 type Hugo struct {
 	query *querybuilder.Selection
 
@@ -3783,16 +3791,6 @@ type Hugo struct {
 
 func (r *Hugo) WithGraphQLQuery(q *querybuilder.Selection) *Hugo {
 	return &Hugo{
-		query: q,
-	}
-}
-
-func (r *Hugo) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
 		query: q,
 	}
 }
@@ -3879,6 +3877,16 @@ func (r *Hugo) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadHugoFromID(HugoID(id))
 	return nil
+}
+
+func (r *Hugo) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 func (r *Hugo) Platform(ctx context.Context) (string, error) {
@@ -5254,16 +5262,6 @@ func (r *Nodejs) WithGraphQLQuery(q *querybuilder.Selection) *Nodejs {
 	}
 }
 
-func (r *Nodejs) Configuration(container *Container) *Container {
-	assertNotNil("container", container)
-	q := r.query.Select("configuration")
-	q = q.Arg("container", container)
-
-	return &Container{
-		query: q,
-	}
-}
-
 func (r *Nodejs) Container() *Container {
 	q := r.query.Select("container")
 
@@ -5319,6 +5317,16 @@ func (r *Nodejs) UnmarshalJSON(bs []byte) error {
 	}
 	*r = *dag.LoadNodejsFromID(NodejsID(id))
 	return nil
+}
+
+func (r *Nodejs) Installation(container *Container) *Container {
+	assertNotNil("container", container)
+	q := r.query.Select("installation")
+	q = q.Arg("container", container)
+
+	return &Container{
+		query: q,
+	}
 }
 
 // A definition of a custom object defined in a Module.

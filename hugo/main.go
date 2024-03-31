@@ -80,7 +80,7 @@ func (hugo *Hugo) Directory(
 	return directory
 }
 
-func (hugo *Hugo) Configuration(container *Container) *Container {
+func (hugo *Hugo) Installation(container *Container) *Container {
 	container = container.
 		WithDirectory("/", hugo.Directory("")).
 		WithMountedCache(CacheDir, dag.CacheVolume("hugo")).
@@ -91,7 +91,7 @@ func (hugo *Hugo) Configuration(container *Container) *Container {
 
 func (hugo *Hugo) Container() *Container {
 	container := dag.Redhat().Micro().Container().
-		With(hugo.Configuration).
+		With(hugo.Installation).
 		WithEntrypoint([]string{"hugo"}).
 		WithoutDefaultArgs().
 		WithExposedPort(1313)

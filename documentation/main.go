@@ -8,40 +8,19 @@ import (
 
 type Documentation struct{}
 
-func New() *Documentation {
-	documentation := &Documentation{}
-
-	return documentation
-}
-
-func (documentation *Documentation) Init() *Directory {
-	template := dag.CurrentModule().Source().Directory("template")
-
-	return template
+func (*Documentation) Init() *Directory {
+	return dag.CurrentModule().Source().Directory("template")
 }
 
 type DocumentationBuilder struct {
-	// +private
-	Directory *Directory
-	// +private
-	Configuration DocumentationBuilderConfiguration
+	*Container
 }
 
-type DocumentationBuilderConfiguration struct {
-	Hugo struct {
-		Version string
-	}
-}
-
-func (documentation *Documentation) Builder(
+func (*Documentation) Builder(
 	ctx context.Context,
 	directory *Directory,
 ) (*DocumentationBuilder, error) {
 	const packageJsonFilename string = "package.json"
-
-	builder := &DocumentationBuilder{
-		Directory: directory,
-	}
 
 	packageJsonString, err := directory.File(packageJsonFilename).Contents(ctx)
 
@@ -49,27 +28,31 @@ func (documentation *Documentation) Builder(
 		return nil, fmt.Errorf("failed to read %q file: %w", packageJsonFilename, err)
 	}
 
-	err = json.Unmarshal([]byte(packageJsonString), &builder.Configuration)
+	var configuration struct {
+		Hugo struct {
+			Version string
+		}
+	}
+
+	err = json.Unmarshal([]byte(packageJsonString), &configuration)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal %q file: %w", packageJsonFilename, err)
 	}
 
-	if builder.Configuration.Hugo.Version == "" {
+	if configuration.Hugo.Version == "" {
 		return nil, fmt.Errorf("Hugo version is not set in %q file", packageJsonFilename)
 	}
 
-	return builder, nil
-}
+	builder := &DocumentationBuilder{}
 
-func (builder *DocumentationBuilder) Container() *Container {
 	kroki := dag.Kroki()
 
-	container := dag.Redhat().Minimal().Container().
-		With(dag.Nodejs().Configuration).
-		With(dag.Golang().Configuration).
-		With(dag.Hugo(builder.Configuration.Hugo.Version).Configuration).
-		WithMountedDirectory(".", builder.Directory).
+	builder.Container = dag.Redhat().Minimal().Container().
+		With(dag.Nodejs().Installation).
+		With(dag.Golang().Installation).
+		With(dag.Hugo(configuration.Hugo.Version).Installation).
+		WithMountedDirectory(".", directory).
 		WithExec([]string{"npm clean-install"}).
 		WithEntrypoint([]string{"npm", "run", "all", "--"}).
 		WithoutDefaultArgs()
@@ -79,12 +62,11 @@ func (builder *DocumentationBuilder) Container() *Container {
 	//WithServiceBinding("kroki", kroki.Server())
 	_ = kroki
 
-	return container
+	return builder, nil
 }
 
 type DocumentationBuild struct {
-	// +private
-	Builder *Container
+	*Directory
 }
 
 func (builder *DocumentationBuilder) Build(
@@ -92,27 +74,16 @@ func (builder *DocumentationBuilder) Build(
 	args []string,
 ) *DocumentationBuild {
 	build := &DocumentationBuild{
-		Builder: builder.Container().WithExec(args),
+		Directory: builder.WithExec(args).Directory("public"),
 	}
 
 	return build
 }
 
-func (build *DocumentationBuild) Directory() *Directory {
-	directory := build.Builder.Directory("public")
-
-	return directory
-}
-
 func (build *DocumentationBuild) Container() *Container {
-	directory := build.Directory()
-	container := dag.Caddy(directory).Container()
-
-	return container
+	return dag.Caddy(build.Directory).Container()
 }
 
 func (build *DocumentationBuild) Server() *Service {
-	server := build.Container().AsService()
-
-	return server
+	return build.Container().AsService()
 }
