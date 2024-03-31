@@ -7,13 +7,13 @@ import (
 const (
 	ImageRegistry string = "registry.access.redhat.com"
 
-	MicroImageRepository string = "ubi9-micro"
-	MicroImageTag        string = "9.3-15"
-	MicroImageDigest     string = "sha256:8e33df2832f039b4b1adc53efd783f9404449994b46ae321ee4a0bf4499d5c42"
+	RedhatMicroImageRepository string = "ubi9-micro"
+	RedhatMicroImageTag        string = "9.3-15"
+	RedhatMicroImageDigest     string = "sha256:8e33df2832f039b4b1adc53efd783f9404449994b46ae321ee4a0bf4499d5c42"
 
-	MinimalImageRepository string = "ubi9-minimal"
-	MinimalImageTag        string = "9.3-1552"
-	MinimalImageDigest     string = "sha256:582e18f13291d7c686ec4e6e92d20b24c62ae0fc72767c46f30a69b1a6198055"
+	RedhatMinimalImageRepository string = "ubi9-minimal"
+	RedhatMinimalImageTag        string = "9.3-1552"
+	RedhatMinimalImageDigest     string = "sha256:582e18f13291d7c686ec4e6e92d20b24c62ae0fc72767c46f30a69b1a6198055"
 )
 
 type Redhat struct{}
@@ -28,7 +28,7 @@ func (*Redhat) Micro() *RedhatMicro {
 
 func (*RedhatMicro) Container() *Container {
 	container := dag.Container().
-		From(ImageRegistry + "/" + MicroImageRepository + ":" + MicroImageTag + "@" + MicroImageDigest).
+		From(ImageRegistry + "/" + RedhatMicroImageRepository + ":" + RedhatMicroImageTag + "@" + RedhatMicroImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).
 		WithoutDefaultArgs().
 		WithWorkdir("/home")
@@ -46,7 +46,7 @@ func (*Redhat) Minimal() *RedhatMinimal {
 
 func (*RedhatMinimal) Container() *Container {
 	container := dag.Container().
-		From(ImageRegistry + "/" + MinimalImageRepository + ":" + MinimalImageTag + "@" + MinimalImageDigest).
+		From(ImageRegistry + "/" + RedhatMinimalImageRepository + ":" + RedhatMinimalImageTag + "@" + RedhatMinimalImageDigest).
 		WithEntrypoint([]string{"sh", "-c"}).
 		WithoutDefaultArgs().
 		WithWorkdir("/home")
