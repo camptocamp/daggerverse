@@ -11,8 +11,8 @@
     "version": "0.124.1"
   },
   "scripts": {
-    "build": "hugo",
-    "serve": "hugo server --bind 0.0.0.0",
-    "all": "npm run build -- --cleanDestinationDir --minify"
+    "hugo": "hugo",
+    "build": "hugo --cleanDestinationDir --minify",
+    "serve": "hugo server --bind 0.0.0.0"
   }
 }

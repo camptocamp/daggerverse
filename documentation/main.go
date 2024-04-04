@@ -54,7 +54,7 @@ func (*Documentation) Builder(
 		With(dag.Hugo(configuration.Hugo.Version).Installation).
 		WithMountedDirectory(".", directory).
 		WithExec([]string{"npm clean-install"}).
-		WithEntrypoint([]string{"npm", "run", "all", "--"}).
+		WithEntrypoint([]string{"npm", "run", "build", "--"}).
 		WithoutDefaultArgs()
 
 	// FIXME
