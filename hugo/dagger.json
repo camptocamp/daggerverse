@@ -3,10 +3,6 @@
   "sdk": "go",
   "dependencies": [
     {
-      "name": "busybox",
-      "source": "../busybox"
-    },
-    {
       "name": "golang",
       "source": "../golang"
     },
@@ -17,12 +13,8 @@
     {
       "name": "redhat",
       "source": "../redhat"
-    },
-    {
-      "name": "sass",
-      "source": "../sass"
     }
   ],
   "source": ".",
-  "engineVersion": "v0.10.2"
+  "engineVersion": "v0.10.3"
 }

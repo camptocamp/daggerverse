@@ -52,7 +52,7 @@ func (sass *Sass) Files() *Directory {
 
 	tarball := dag.HTTP(downloadURL + "/" + tarballName)
 
-	container := dag.Busybox().Container().
+	container := dag.Redhat().Container().
 		WithMountedFile("sass.tar.gz", tarball).
 		WithExec([]string{"tar --extract --strip-components 1 --file sass.tar.gz"})
 

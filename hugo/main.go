@@ -53,7 +53,7 @@ func (hugo *Hugo) File() *File {
 	tarball := dag.HTTP(downloadURL + "/" + tarballName)
 	checksums := dag.HTTP(downloadURL + "/" + checksumsName)
 
-	container := dag.Busybox().Container().
+	container := dag.Redhat().Container().
 		WithMountedFile(tarballName, tarball).
 		WithMountedFile(checksumsName, checksums).
 		WithExec([]string{"grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
