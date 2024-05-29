@@ -48,6 +48,10 @@ func (module *RedhatModule) Enabled(container *Container) *Container {
 	return container.WithExec([]string{"dnf module enable --assumeyes " + module.Name + " && dnf clean all"})
 }
 
+func (module *RedhatModule) Disabled(container *Container) *Container {
+	return container.WithExec([]string{"dnf module disable --assumeyes " + module.Name + " && dnf clean all"})
+}
+
 type RedhatPackages struct {
 	Names []string
 }
@@ -64,12 +68,24 @@ func (packages *RedhatPackages) Installed(container *Container) *Container {
 	return container.WithExec([]string{"dnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
 }
 
+func (packages *RedhatPackages) Removed(container *Container) *Container {
+	return container.WithExec([]string{"dnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
+}
+
+func (redhat *Redhat) CaCertificates() *Directory {
+	const installroot string = "/tmp/rootfs"
+
+	caCertificates := redhat.Container().
+		WithExec([]string{"mkdir " + installroot + " && dnf --installroot " + installroot + " install --nodocs --setopt install_weak_deps=0 --assumeyes ca-certificates && dnf --installroot " + installroot + " clean all"}).
+		Directory(installroot + "/etc/pki/ca-trust")
+
+	return caCertificates
+}
+
 type RedhatMinimal struct{}
 
 func (*Redhat) Minimal() *RedhatMinimal {
-	redhatMinimal := &RedhatMinimal{}
-
-	return redhatMinimal
+	return &RedhatMinimal{}
 }
 
 func (*RedhatMinimal) Container() *Container {
@@ -98,6 +114,10 @@ func (module *RedhatMinimalModule) Enabled(container *Container) *Container {
 	return container.WithExec([]string{"microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
 }
 
+func (module *RedhatMinimalModule) Disabled(container *Container) *Container {
+	return container.WithExec([]string{"microdnf module disable --assumeyes " + module.Name + " && microdnf clean all"})
+}
+
 type RedhatMinimalPackages struct {
 	Names []string
 }
@@ -114,12 +134,14 @@ func (packages *RedhatMinimalPackages) Installed(container *Container) *Containe
 	return container.WithExec([]string{"microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
 }
 
+func (packages *RedhatMinimalPackages) Removed(container *Container) *Container {
+	return container.WithExec([]string{"microdnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
+}
+
 type RedhatMicro struct{}
 
 func (*Redhat) Micro() *RedhatMicro {
-	redhatMicro := &RedhatMicro{}
-
-	return redhatMicro
+	return &RedhatMicro{}
 }
 
 func (*RedhatMicro) Container() *Container {

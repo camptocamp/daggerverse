@@ -1,0 +1,15 @@
+{
+  "name": "terraform",
+  "sdk": "go",
+  "dependencies": [
+    {
+      "name": "redhat",
+      "source": "../redhat"
+    }
+  ],
+  "source": ".",
+  "engineVersion": "v0.11.5",
+  "codegen": {
+    "automaticGitignore": false
+  }
+}
