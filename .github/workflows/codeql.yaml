@@ -1,0 +1,55 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches:
+      - "main"
+
+  pull_request:
+    branches:
+      - "main"
+
+  schedule:
+    - cron: "0 0 * * 6"
+
+jobs:
+  analyze:
+    name: "Analyze"
+    runs-on: "ubuntu-22.04"
+
+    permissions:
+      contents: "read"
+      security-events: "write"
+
+    strategy:
+      matrix:
+        modules:
+
+      fail-fast: false
+
+    steps:
+      - name: "Check out repository"
+        id: "checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Set up Dagger"
+        id: "setup-dagger"
+        uses: "camptocamp/setup-dagger@v1"
+        with:
+          module-path: "${{ matrix.modules.path }}"
+
+      - name: "Generate code"
+        id: "generate"
+        run: "dagger develop"
+        working-directory: "${{ steps.setup-dagger.outputs.module-path }}"
+
+      - name: "Initialize CodeQL"
+        id: "init"
+        uses: "github/codeql-action/init@v3"
+        with:
+          source-root: "${{ matrix.modules.path }}"
+          languages: "${{ matrix.modules.language }}"
+
+      - name: "Perform CodeQL Analysis"
+        id: "analyze"
+        uses: "github/codeql-action/analyze@v3"

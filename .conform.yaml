@@ -1,0 +1,22 @@
+policies:
+  - type: "commit"
+    spec:
+      conventional:
+        types:
+          - "feat"
+          - "fix"
+          - "chore"
+          - "style"
+          - "refactor"
+          - "tests"
+          - "docs"
+          - "build"
+          - "ci"
+          - "revert"
+        scopes:
+          - ".+"
+      header:
+        imperative: true
+      spellcheck:
+        locale: "UK"
+      dco: true
