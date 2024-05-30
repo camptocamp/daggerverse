@@ -1,0 +1,32 @@
+changesDir: ".changes"
+unreleasedDir: "unreleased"
+versionExt: "md"
+projectsVersionSeparator: "/"
+
+headerPath: "header.tpl.md"
+
+versionFormat: '## {{ .Version }} — {{ .Time.Format "2006-01-02" }}'
+kindFormat: "### {{ .Kind }}"
+changeFormat: "* {{ .Body }}"
+
+newlines:
+  beforeChangelogVersion: 1
+  beforeKind: 1
+  afterKind: 1
+  endOfVersion: 1
+
+kinds:
+  - label: "Added"
+    auto: "minor"
+  - label: "Changed"
+    auto: "major"
+  - label: "Deprecated"
+    auto: "minor"
+  - label: "Removed"
+    auto: "major"
+  - label: "Fixed"
+    auto: "patch"
+  - label: "Security"
+    auto: "patch"
+
+projects:

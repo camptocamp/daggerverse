@@ -1,0 +1,36 @@
+name: "Checks"
+
+on:
+  push:
+    branches:
+      - "main"
+
+  pull_request:
+    branches:
+      - "main"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  commits:
+    name: "Check commits"
+    runs-on: "ubuntu-22.04"
+    if: "${{ github.event_name == 'pull_request' }}"
+
+    permissions:
+      contents: "read"
+
+    steps:
+      - name: "Check out repository"
+        id: "checkout"
+        uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+
+      - name: "Check commit messages"
+        id: "conform"
+        uses: "docker://ghcr.io/siderolabs/conform:v0.1.0-alpha.30"
+        with:
+          args: "enforce --revision-range='${{ format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) }}'"

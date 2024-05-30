@@ -1,0 +1,71 @@
+name: "Release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: "Module to release"
+        type: "choice"
+
+        options:
+
+        required: true
+
+jobs:
+  action:
+    name: "Release GitHub Action"
+    runs-on: "ubuntu-22.04"
+
+    permissions:
+      contents: "write"
+
+    steps:
+      - name: "Check out repository"
+        id: "checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Configure Git"
+        id: "config"
+        run: |
+          git config 'user.name' 'github-actions[bot]'
+          git config 'user.email' '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: "Batch changes"
+        id: "batch"
+        uses: "miniscruff/changie-action@v2"
+        with:
+          args: "batch --project '${{ inputs.module }}' auto"
+
+      - name: "Merge changes"
+        id: "merge"
+        uses: "miniscruff/changie-action@v2"
+        with:
+          args: "merge"
+
+      - name: "Get version"
+        id: "version"
+        uses: "miniscruff/changie-action@v2"
+        with:
+          args: "latest --project '${{ inputs.module }}' --remove-prefix"
+
+      - name: "Commit changes"
+        id: "commit"
+        run: |
+          module="$(echo ${{ steps.version.outputs.output }} | cut --delimiter '/' --field '1')"
+          version="$(echo ${{ steps.version.outputs.output }} | cut --delimiter '/' --field '2')"
+          changes="$(tail --lines +3 ".changes/$module/v$version.md" | sed 's/^##//')"
+          echo -e "changes<<EOF\n$changes\nEOF" >> "$GITHUB_OUTPUT"
+          git add .
+          git commit --message "chore: release $module module version $version" --signoff
+          git tag --annotate --message "$module module version $version" --message "$changes" --cleanup verbatim "$module/v$version"
+          git push --follow-tags
+
+      - name: "Publish release"
+        id: "publish"
+        run: |
+          module="$(echo ${{ steps.version.outputs.output }} | cut --delimiter '/' --field '1')"
+          version="$(echo ${{ steps.version.outputs.output }} | cut --delimiter '/' --field '2')"
+          changes='${{ steps.commit.outputs.changes }}'
+          gh release create --title "$module module version $version" --notes "$(echo "$changes" | sed 's/^#/##/')" "$module/v$version"
+        env:
+          GH_TOKEN: "${{ github.token }}"
