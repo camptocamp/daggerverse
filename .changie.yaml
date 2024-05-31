@@ -30,3 +30,5 @@ kinds:
     auto: "patch"
 
 projects:
+  - key: "redhat"
+    changelog: "redhat/CHANGELOG.md"

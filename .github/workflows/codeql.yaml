@@ -24,6 +24,7 @@ jobs:
     strategy:
       matrix:
         modules:
+          - path: "redhat"
 
       fail-fast: false
 
