@@ -40,3 +40,5 @@ projects:
     changelog: "caddy/CHANGELOG.md"
   - key: "hugo"
     changelog: "hugo/CHANGELOG.md"
+  - key: "sass"
+    changelog: "sass/CHANGELOG.md"
