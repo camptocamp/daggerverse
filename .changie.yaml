@@ -34,3 +34,5 @@ projects:
     changelog: "redhat/CHANGELOG.md"
   - key: "golang"
     changelog: "golang/CHANGELOG.md"
+  - key: "nodejs"
+    changelog: "nodejs/CHANGELOG.md"

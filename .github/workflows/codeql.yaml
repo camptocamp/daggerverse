@@ -26,6 +26,7 @@ jobs:
         modules:
           - path: "redhat"
           - path: "golang"
+          - path: "nodejs"
 
       fail-fast: false
 
