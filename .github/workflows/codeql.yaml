@@ -28,6 +28,7 @@ jobs:
           - path: "golang"
           - path: "nodejs"
           - path: "caddy"
+          - path: "hugo"
 
       fail-fast: false
 

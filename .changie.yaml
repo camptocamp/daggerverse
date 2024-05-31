@@ -38,3 +38,5 @@ projects:
     changelog: "nodejs/CHANGELOG.md"
   - key: "caddy"
     changelog: "caddy/CHANGELOG.md"
+  - key: "hugo"
+    changelog: "hugo/CHANGELOG.md"
