@@ -25,6 +25,7 @@ jobs:
       matrix:
         modules:
           - path: "redhat"
+          - path: "golang"
 
       fail-fast: false
 

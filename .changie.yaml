@@ -32,3 +32,5 @@ kinds:
 projects:
   - key: "redhat"
     changelog: "redhat/CHANGELOG.md"
+  - key: "golang"
+    changelog: "golang/CHANGELOG.md"
