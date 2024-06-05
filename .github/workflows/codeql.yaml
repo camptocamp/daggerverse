@@ -30,6 +30,7 @@ jobs:
           - path: "caddy"
           - path: "hugo"
           - path: "sass"
+          - path: "kroki"
 
       fail-fast: false
 
