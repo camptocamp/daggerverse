@@ -27,6 +27,7 @@ jobs:
           - path: "redhat"
           - path: "golang"
           - path: "nodejs"
+          - path: "caddy"
 
       fail-fast: false
 

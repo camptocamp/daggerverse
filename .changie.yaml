@@ -36,3 +36,5 @@ projects:
     changelog: "golang/CHANGELOG.md"
   - key: "nodejs"
     changelog: "nodejs/CHANGELOG.md"
+  - key: "caddy"
+    changelog: "caddy/CHANGELOG.md"

@@ -11,6 +11,7 @@ on:
           - "redhat"
           - "golang"
           - "nodejs"
+          - "caddy"
 
         required: true
 
