@@ -44,3 +44,5 @@ projects:
     changelog: "sass/CHANGELOG.md"
   - key: "kroki"
     changelog: "kroki/CHANGELOG.md"
+  - key: "documentation"
+    changelog: "documentation/CHANGELOG.md"

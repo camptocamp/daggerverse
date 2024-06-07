@@ -1,0 +1,6 @@
+---
+exec:
+  allow:
+    - "^go$"
+    - "^npx$"
+    - "^asciidoctor$"
