@@ -46,3 +46,5 @@ projects:
     changelog: "kroki/CHANGELOG.md"
   - key: "documentation"
     changelog: "documentation/CHANGELOG.md"
+  - key: "presentation"
+    changelog: "presentation/CHANGELOG.md"

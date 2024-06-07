@@ -16,6 +16,7 @@ on:
           - "sass"
           - "kroki"
           - "documentation"
+          - "presentation"
 
         required: true
 

@@ -32,6 +32,7 @@ jobs:
           - path: "sass"
           - path: "kroki"
           - path: "documentation"
+          - path: "presentation"
 
       fail-fast: false
 
