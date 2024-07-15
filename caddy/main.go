@@ -19,7 +19,7 @@ const (
 	// Caddy container image tag
 	ImageTag string = "2.8.4"
 	// Caddy container image digest
-	ImageDigest string = "sha256:4718355ff1e2592290e49950f01fb1d4b75adb920a7695aedd94b6a4590a684b"
+	ImageDigest string = "sha256:d4c3d1d98f070f36d21eff1e7521edb718704a9f906618708b06946b9eb4f448"
 )
 
 // Caddy
