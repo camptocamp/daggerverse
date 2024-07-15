@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"dagger/documentation/internal/dagger"
 	"encoding/json"
 	"fmt"
 )
@@ -17,21 +18,21 @@ import (
 type Documentation struct{}
 
 // Get a directory containing a newly initialized documentation
-func (*Documentation) Init() *Directory {
+func (*Documentation) Init() *dagger.Directory {
 	return dag.CurrentModule().Source().Directory("template")
 }
 
 // Documentation builder
 type DocumentationBuilder struct {
 	// Get a container ready to build the documentation
-	*Container
+	*dagger.Container
 }
 
 // Documentation builder constructor
 func (*Documentation) Builder(
 	ctx context.Context,
 	// Directory containing documentation to build
-	directory *Directory,
+	directory *dagger.Directory,
 ) (*DocumentationBuilder, error) {
 	const packageJsonFilename string = "package.json"
 
@@ -67,7 +68,7 @@ func (*Documentation) Builder(
 		With(dag.Hugo(configuration.Hugo.Version).Installation).
 		WithServiceBinding("kroki", kroki.Server()).
 		WithMountedDirectory(".", directory).
-		WithExec([]string{"npm clean-install"}).
+		WithExec([]string{"npm", "clean-install"}).
 		WithEntrypoint([]string{"npm", "run", "build", "--"}).
 		WithoutDefaultArgs()
 
@@ -77,7 +78,7 @@ func (*Documentation) Builder(
 // Documentation build result
 type DocumentationBuildResult struct {
 	// Get a directory containing the documentation build result
-	*Directory
+	*dagger.Directory
 }
 
 // Build the documentation
@@ -87,7 +88,7 @@ func (builder *DocumentationBuilder) Build(
 	args []string,
 ) *DocumentationBuildResult {
 	build := &DocumentationBuildResult{
-		Directory: builder.WithExec(args).Directory("public"),
+		Directory: builder.WithExec(args, dagger.ContainerWithExecOpts{UseEntrypoint: true}).Directory("public"),
 	}
 
 	return build
@@ -96,13 +97,13 @@ func (builder *DocumentationBuilder) Build(
 // Get a container ready to serve the documentation
 //
 // Container exposes port 8080.
-func (build *DocumentationBuildResult) Container() *Container {
+func (build *DocumentationBuildResult) Container() *dagger.Container {
 	return dag.Caddy(build.Directory).Container()
 }
 
 // Get a service serving the documentation
 //
 // See `container()` for details.
-func (build *DocumentationBuildResult) Server() *Service {
-	return build.Container().AsService()
+func (build *DocumentationBuildResult) Server() *dagger.Service {
+	return dag.Caddy(build.Directory).Server()
 }
