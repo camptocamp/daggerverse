@@ -7,6 +7,10 @@
 
 package main
 
+import (
+	"dagger/kroki/internal/dagger"
+)
+
 const (
 	// Kroki container image registry
 	ImageRegistry string = "docker.io"
@@ -29,7 +33,7 @@ func New() *Kroki {
 // Get a Kroki container ready to create diagrams
 //
 // Container exposes port 8080.
-func (*Kroki) Container() *Container {
+func (*Kroki) Container() *dagger.Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
 		WithExposedPort(8000)
@@ -40,6 +44,6 @@ func (*Kroki) Container() *Container {
 // Get a Kroki service creating diagrams
 //
 // See `container()` for details.
-func (kroki *Kroki) Server() *Service {
+func (kroki *Kroki) Server() *dagger.Service {
 	return kroki.Container().AsService()
 }
