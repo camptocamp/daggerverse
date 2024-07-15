@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"dagger/sass/internal/dagger"
 	"fmt"
 	"strings"
 )
@@ -18,7 +19,7 @@ type Sass struct {
 	// +private
 	Version string
 	// +private
-	Platform Platform
+	Platform dagger.Platform
 }
 
 // Sass constructor
@@ -28,7 +29,7 @@ func New(
 	version string,
 	// Platform to get Sass for
 	// +optional
-	platform Platform,
+	platform dagger.Platform,
 ) (*Sass, error) {
 	if platform == "" {
 		defaultPlatform, err := dag.DefaultPlatform(ctx)
@@ -49,7 +50,7 @@ func New(
 }
 
 // Get Sass binaries (Dart runtime and Sass snapshot)
-func (sass *Sass) Binaries() *Directory {
+func (sass *Sass) Binaries() *dagger.Directory {
 	platform := strings.Split(string(sass.Platform), "/")
 
 	os := platform[0]
@@ -68,7 +69,7 @@ func (sass *Sass) Binaries() *Directory {
 
 	container := dag.Redhat().Container().
 		WithMountedFile("sass.tar.gz", tarball).
-		WithExec([]string{"tar --extract --strip-components 1 --file sass.tar.gz"})
+		WithExec([]string{"tar", "--extract", "--strip-components", "1", "--file", "sass.tar.gz"})
 
 	directory := dag.Directory().
 		WithFile("dart", container.File("src/dart")).
@@ -82,7 +83,7 @@ func (sass *Sass) Overlay(
 	// Filesystem prefix under which to install Sass
 	// +optional
 	prefix string,
-) *Directory {
+) *dagger.Directory {
 	if prefix == "" {
 		prefix = "/usr/local"
 	}
@@ -90,7 +91,7 @@ func (sass *Sass) Overlay(
 	directory := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
 			WithDirectory("libexec/sass", sass.Binaries()).
-			WithFile("bin/sass", dag.CurrentModule().Source().File("bin/sass"), DirectoryWithFileOpts{Permissions: 0o755}),
+			WithFile("bin/sass", dag.CurrentModule().Source().File("bin/sass"), dagger.DirectoryWithFileOpts{Permissions: 0o755}),
 		)
 
 	return directory
@@ -99,8 +100,8 @@ func (sass *Sass) Overlay(
 // Install Sass in a container
 func (sass *Sass) Installation(
 	// Container in which to install Sass
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		WithDirectory("/", sass.Overlay(""))
 
@@ -110,8 +111,8 @@ func (sass *Sass) Installation(
 // Get a Sass container from a base container
 func (sass *Sass) Container(
 	// Base container
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(sass.Installation).
 		WithEntrypoint([]string{"sass"}).
@@ -121,21 +122,21 @@ func (sass *Sass) Container(
 }
 
 // Get a Red Hat Universal Base Image container with Sass
-func (sass *Sass) RedhatContainer() *Container {
+func (sass *Sass) RedhatContainer() *dagger.Container {
 	container := sass.Container(dag.Redhat().Container())
 
 	return container
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Sass
-func (sass *Sass) RedhatMinimalContainer() *Container {
+func (sass *Sass) RedhatMinimalContainer() *dagger.Container {
 	container := sass.Container(dag.Redhat().Minimal().Container())
 
 	return container
 }
 
 // Get a Red Hat Micro Universal Base Image container with Sass
-func (sass *Sass) RedhatMicroContainer() *Container {
+func (sass *Sass) RedhatMicroContainer() *dagger.Container {
 	container := sass.Container(dag.Redhat().Micro().Container())
 
 	return container
