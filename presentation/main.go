@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"dagger/presentation/internal/dagger"
 	"encoding/json"
 	"fmt"
 )
@@ -17,23 +18,23 @@ import (
 type Presentation struct{}
 
 // Get a directory containing a newly initialized presentation
-func (*Presentation) Init() *Directory {
+func (*Presentation) Init() *dagger.Directory {
 	return dag.CurrentModule().Source().Directory("template")
 }
 
 // Presentation builder
 type PresentationBuilder struct {
 	// Get a container ready to build the presentation
-	*Container
+	*dagger.Container
 }
 
 // Presentation builder constructor
 func (*Presentation) Builder(
 	ctx context.Context,
 	// Directory containing presentation to build
-	directory *Directory,
+	directory *dagger.Directory,
 	// npm configuration file (used to pass GitHub registry credentials)
-	npmrc *Secret,
+	npmrc *dagger.Secret,
 ) (*PresentationBuilder, error) {
 	const packageJsonFilename string = "package.json"
 
@@ -56,12 +57,12 @@ func (*Presentation) Builder(
 	kroki := dag.Kroki()
 
 	builder.Container = dag.Redhat().Minimal().Container().
-		With(dag.Nodejs(NodejsOpts{
+		With(dag.Nodejs(dagger.NodejsOpts{
 			Npmrc: npmrc,
 		}).RedhatMinimalInstallation).
 		WithServiceBinding("kroki", kroki.Server()).
 		WithMountedDirectory(".", directory).
-		WithExec([]string{"npm clean-install"}).
+		WithExec([]string{"npm", "clean-install"}).
 		WithEntrypoint([]string{"npm", "run", "all"}).
 		WithoutDefaultArgs()
 
@@ -71,13 +72,13 @@ func (*Presentation) Builder(
 // Presentation build result
 type PresentationBuildResult struct {
 	// Get a directory containing the presentation build result
-	*Directory
+	*dagger.Directory
 }
 
 // Build the presentation
 func (builder *PresentationBuilder) Build() *PresentationBuildResult {
 	build := &PresentationBuildResult{
-		Directory: builder.WithExec(nil).Directory("dist"),
+		Directory: builder.WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).Directory("dist"),
 	}
 
 	return build
@@ -86,13 +87,13 @@ func (builder *PresentationBuilder) Build() *PresentationBuildResult {
 // Get a container ready to serve the presentation
 //
 // Container exposes port 8080.
-func (build *PresentationBuildResult) Container() *Container {
+func (build *PresentationBuildResult) Container() *dagger.Container {
 	return dag.Caddy(build.Directory).Container()
 }
 
 // Get a service serving the presentation
 //
 // See `container()` for details.
-func (build *PresentationBuildResult) Server() *Service {
-	return build.Container().AsService()
+func (build *PresentationBuildResult) Server() *dagger.Service {
+	return dag.Caddy(build.Directory).Server()
 }
