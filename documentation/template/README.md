@@ -36,7 +36,7 @@ Install [Dagger].
 Execute the following command to build the documentation:
 
 ```shell
-dagger call -m documentation builder --directory '.' build --output 'public'
+dagger call -m documentation builder --directory '.' build directory --output 'public'
 ```
 
 To preview the documentation, execute the following command, then visit [localhost:8080](http://localhost:8080):
