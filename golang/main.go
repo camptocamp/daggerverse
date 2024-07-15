@@ -7,6 +7,10 @@
 
 package main
 
+import (
+	"dagger/golang/internal/dagger"
+)
+
 const (
 	// Location of Go download and Go build caches
 	CacheDir string = "/var/cache/go"
@@ -23,8 +27,8 @@ func New() *Golang {
 // Configure Go in a container
 func (*Golang) Configuration(
 	// Container in which to configure Go
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		WithMountedCache(CacheDir, dag.CacheVolume("golang")).
 		WithEnvVariable("GOPATH", CacheDir).
@@ -36,8 +40,8 @@ func (*Golang) Configuration(
 // Install Go in a Red Hat Universal Base Image container from packages
 func (golang *Golang) RedhatInstallation(
 	// Container in which to install Go
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(dag.Redhat().Packages([]string{
 			"go",
@@ -49,15 +53,15 @@ func (golang *Golang) RedhatInstallation(
 }
 
 // Get a Red Hat Universal Base Image container with Go
-func (golang *Golang) RedhatContainer() *Container {
+func (golang *Golang) RedhatContainer() *dagger.Container {
 	return dag.Redhat().Container().With(golang.RedhatInstallation)
 }
 
 // Install Go in a Red Hat Minimal Universal Base Image container from packages
 func (golang *Golang) RedhatMinimalInstallation(
 	// Container in which to install Go
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(dag.Redhat().Minimal().Packages([]string{
 			"go",
@@ -69,6 +73,6 @@ func (golang *Golang) RedhatMinimalInstallation(
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Go
-func (golang *Golang) RedhatMinimalContainer() *Container {
+func (golang *Golang) RedhatMinimalContainer() *dagger.Container {
 	return dag.Redhat().Minimal().Container().With(golang.RedhatMinimalInstallation)
 }
