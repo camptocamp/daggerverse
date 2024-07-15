@@ -22,7 +22,7 @@ on:
 
 jobs:
   action:
-    name: "Release GitHub Action"
+    name: "Release Dagger module"
     runs-on: "ubuntu-22.04"
 
     permissions:
@@ -43,7 +43,7 @@ jobs:
         id: "batch"
         uses: "miniscruff/changie-action@v2"
         with:
-          args: "batch --project '${{ inputs.module }}' auto"
+          args: "batch --project ${{ inputs.module }} auto"
 
       - name: "Merge changes"
         id: "merge"
@@ -55,7 +55,7 @@ jobs:
         id: "version"
         uses: "miniscruff/changie-action@v2"
         with:
-          args: "latest --project '${{ inputs.module }}' --remove-prefix"
+          args: "latest --project ${{ inputs.module }} --remove-prefix"
 
       - name: "Commit changes"
         id: "commit"
@@ -76,5 +76,6 @@ jobs:
           version="$(echo ${{ steps.version.outputs.output }} | cut --delimiter '/' --field '2')"
           changes='${{ steps.commit.outputs.changes }}'
           gh release create --title "$module module version $version" --notes "$(echo "$changes" | sed 's/^#/##/')" "$module/v$version"
+          curl https://daggerverse.dev/crawl --request 'PUT' --data "ref=github.com/camptocamp/daggerverse/$module@v$version"
         env:
           GH_TOKEN: "${{ github.token }}"
