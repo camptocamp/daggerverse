@@ -8,6 +8,7 @@
 package main
 
 import (
+	"dagger/redhat/internal/dagger"
 	"strings"
 )
 
@@ -46,11 +47,9 @@ func New() *Redhat {
 }
 
 // Get a Red Hat Universal Base Image container
-func (*Redhat) Container() *Container {
+func (*Redhat) Container() *dagger.Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
-		WithEntrypoint([]string{"sh", "-c"}).
-		WithoutDefaultArgs().
 		WithWorkdir("/home")
 
 	return container
@@ -77,17 +76,17 @@ func (*Redhat) Module(
 // Enable a module in a Red Hat Universal Base Image container
 func (module *RedhatModule) Enabled(
 	// Container in which to enable the module
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"dnf module enable --assumeyes " + module.Name + " && dnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "dnf module enable --assumeyes " + module.Name + " && dnf clean all"})
 }
 
 // Disable a module in a Red Hat Universal Base Image container
 func (module *RedhatModule) Disabled(
 	// Container in which to disable the module
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"dnf module disable --assumeyes " + module.Name + " && dnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "dnf module disable --assumeyes " + module.Name + " && dnf clean all"})
 }
 
 // Red Hat Universal Base Image packages
@@ -111,25 +110,25 @@ func (*Redhat) Packages(
 // Install packages in a Red Hat Universal Base Image container
 func (packages *RedhatPackages) Installed(
 	// Container in which to install the packages
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"dnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "dnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
 }
 
 // Remove packages in a Red Hat Universal Base Image container
 func (packages *RedhatPackages) Removed(
 	// Container in which to remove the packages
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"dnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "dnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
 }
 
 // Get Red Hat Universal Base Image CA certificates
-func (redhat *Redhat) CaCertificates() *Directory {
+func (redhat *Redhat) CaCertificates() *dagger.Directory {
 	const installroot string = "/tmp/rootfs"
 
 	caCertificates := redhat.Container().
-		WithExec([]string{"mkdir " + installroot + " && dnf --installroot " + installroot + " install --nodocs --setopt install_weak_deps=0 --assumeyes ca-certificates && dnf --installroot " + installroot + " clean all"}).
+		WithExec([]string{"sh", "-c", "mkdir " + installroot + " && dnf --installroot " + installroot + " install --nodocs --setopt install_weak_deps=0 --assumeyes ca-certificates && dnf --installroot " + installroot + " clean all"}).
 		Directory(installroot + "/etc/pki/ca-trust")
 
 	return caCertificates
@@ -144,11 +143,9 @@ func (*Redhat) Minimal() *RedhatMinimal {
 }
 
 // Get a Red Hat Minimal Universal Base Image container
-func (*RedhatMinimal) Container() *Container {
+func (*RedhatMinimal) Container() *dagger.Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + MinimalImageRepository + ":" + MinimalImageTag + "@" + MinimalImageDigest).
-		WithEntrypoint([]string{"sh", "-c"}).
-		WithoutDefaultArgs().
 		WithWorkdir("/home")
 
 	return container
@@ -175,17 +172,17 @@ func (*RedhatMinimal) Module(
 // Enable a module in a Red Hat Minimal Universal Base Image container
 func (module *RedhatMinimalModule) Enabled(
 	// Container in which to enable the module
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
 }
 
 // Disable a module in a Red Hat Minimal Universal Base Image container
 func (module *RedhatMinimalModule) Disabled(
 	// Container in which to disable the module
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"microdnf module disable --assumeyes " + module.Name + " && microdnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "microdnf module disable --assumeyes " + module.Name + " && microdnf clean all"})
 }
 
 // Red Hat Minimal Universal Base Image packages
@@ -209,17 +206,17 @@ func (*RedhatMinimal) Packages(
 // Install packages in a Red Hat Minimal Universal Base Image container
 func (packages *RedhatMinimalPackages) Installed(
 	// Container in which to install the packages
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "microdnf install --nodocs --setopt install_weak_deps=0 --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
 }
 
 // Remove packages in a Red Hat Minimal Universal Base Image container
 func (packages *RedhatMinimalPackages) Removed(
 	// Container in which to remove the packages
-	container *Container,
-) *Container {
-	return container.WithExec([]string{"microdnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
+	container *dagger.Container,
+) *dagger.Container {
+	return container.WithExec([]string{"sh", "-c", "microdnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && microdnf clean all"})
 }
 
 // Red Hat Micro Universal Base Image
@@ -231,11 +228,9 @@ func (*Redhat) Micro() *RedhatMicro {
 }
 
 // Get a Red Hat Micro Universal Base Image container
-func (*RedhatMicro) Container() *Container {
+func (*RedhatMicro) Container() *dagger.Container {
 	container := dag.Container().
 		From(ImageRegistry + "/" + MicroImageRepository + ":" + MicroImageTag + "@" + MicroImageDigest).
-		WithEntrypoint([]string{"sh", "-c"}).
-		WithoutDefaultArgs().
 		WithWorkdir("/home")
 
 	return container
