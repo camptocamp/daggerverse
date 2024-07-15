@@ -26,6 +26,8 @@ kinds:
     auto: "major"
   - label: "Fixed"
     auto: "patch"
+  - label: "Updated"
+    auto: "patch"
   - label: "Security"
     auto: "patch"
 
