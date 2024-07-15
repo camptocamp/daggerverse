@@ -7,6 +7,10 @@
 
 package main
 
+import (
+	"dagger/caddy/internal/dagger"
+)
+
 const (
 	// Caddy container image registry
 	ImageRegistry string = "docker.io"
@@ -21,13 +25,13 @@ const (
 // Caddy
 type Caddy struct {
 	// +private
-	Directory *Directory
+	Directory *dagger.Directory
 }
 
 // Caddy constructor
 func New(
 	// Directory containing static content to serve
-	directory *Directory,
+	directory *dagger.Directory,
 ) *Caddy {
 	caddy := &Caddy{
 		Directory: directory,
@@ -39,21 +43,19 @@ func New(
 // Get a Caddy container ready to serve the static content
 //
 // Static content is mounted under `/usr/share/caddy` and container exposes port 8080.
-func (caddy *Caddy) Container() *Container {
+func (caddy *Caddy) Container() *dagger.Container {
 	caddyfile := dag.CurrentModule().Source().File("Caddyfile")
 
 	container := dag.Container().
 		From(ImageRegistry+"/"+ImageRepository+":"+ImageTag+"@"+ImageDigest).
-		WithEntrypoint([]string{"sh", "-c"}).
-		WithExec([]string{"chown 65535:65535 /config/caddy"}).
-		WithExec([]string{"chown 65535:65535 /data/caddy"}).
+		WithExec([]string{"chown", "65535:65535", "/config/caddy"}).
+		WithExec([]string{"chown", "65535:65535", "/data/caddy"}).
 		WithEntrypoint([]string{"caddy"}).
 		WithDefaultArgs([]string{"run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"}).
 		WithFile("/etc/caddy/Caddyfile", caddyfile).
 		WithMountedDirectory("/usr/share/caddy", caddy.Directory).
 		WithUser("65535").
-		WithExposedPort(8080).
-		WithExec(nil)
+		WithExposedPort(8080)
 
 	return container
 }
@@ -61,6 +63,6 @@ func (caddy *Caddy) Container() *Container {
 // Get a Caddy service serving the static content
 //
 // See `container()` for details.
-func (caddy *Caddy) Server() *Service {
-	return caddy.Container().AsService()
+func (caddy *Caddy) Server() *dagger.Service {
+	return caddy.Container().WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
 }
