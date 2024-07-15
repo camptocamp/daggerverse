@@ -19,23 +19,23 @@ const (
 	// Red Hat Universal Base Image container repository
 	ImageRepository string = "ubi9"
 	// Red Hat Universal Base Image container tag
-	ImageTag string = "9.4-947.1716476138"
+	ImageTag string = "9.4-1123.1719560047"
 	// Red Hat Universal Base Image container digest
-	ImageDigest string = "sha256:8f8fb7989ee757f27fae06a7d5041c903bc11ebf6ee7a1177c7e3070ce1d9e54"
+	ImageDigest string = "sha256:081c96d1b1c7cd1855722d01f1ca53360510443737b1eb33284c6c4c330e537c"
 
 	// Red Hat Minimal Universal Base Image container repository
 	MinimalImageRepository string = "ubi9-minimal"
 	// Red Hat Minimal Universal Base Image container tag
-	MinimalImageTag string = "9.4-949.1716471857"
+	MinimalImageTag string = "9.4-1134"
 	// Red Hat Minimal Universal Base Image container digest
-	MinimalImageDigest string = "sha256:adbac3083c2f340bee7cce4563665a1555901bee048bca6842b4fa0a1e6b875b"
+	MinimalImageDigest string = "sha256:a7d837b00520a32502ada85ae339e33510cdfdbc8d2ddf460cc838e12ec5fa5a"
 
 	// Red Hat Micro Universal Base Image container repository
 	MicroImageRepository string = "ubi9-micro"
 	// Red Hat Micro Universal Base Image container tag
-	MicroImageTag string = "9.4-6.1716471860"
+	MicroImageTag string = "9.4-9"
 	// Red Hat Micro Universal Base Image container digest
-	MicroImageDigest string = "sha256:213fd2a0116a76eaa274fee20c86eef4dfba9f311784e8fb7d7f5fc38b32f3ef"
+	MicroImageDigest string = "sha256:2044e2ca8e258d00332f40532db9f55fb3d0bfd77ecc84c4aa4c1b7af3626ffb"
 )
 
 // Red Hat Universal Base Image
