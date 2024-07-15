@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"dagger/hugo/internal/dagger"
 	"fmt"
 	"strings"
 )
@@ -25,7 +26,7 @@ type Hugo struct {
 	// +private
 	Extended bool
 	// +private
-	Platform Platform
+	Platform dagger.Platform
 }
 
 // Hugo constructor
@@ -39,7 +40,7 @@ func New(
 	extended bool,
 	// Platform to get Hugo for
 	// +optional
-	platform Platform,
+	platform dagger.Platform,
 ) (*Hugo, error) {
 	if platform == "" {
 		defaultPlatform, err := dag.DefaultPlatform(ctx)
@@ -61,7 +62,7 @@ func New(
 }
 
 // Get Hugo executable binary
-func (hugo *Hugo) Binary() *File {
+func (hugo *Hugo) Binary() *dagger.File {
 	platform := strings.Split(string(hugo.Platform), "/")
 
 	os := platform[0]
@@ -84,8 +85,8 @@ func (hugo *Hugo) Binary() *File {
 	container := dag.Redhat().Container().
 		WithMountedFile(tarballName, tarball).
 		WithMountedFile(checksumsName, checksums).
-		WithExec([]string{"grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
-		WithExec([]string{"tar --extract --file " + tarballName})
+		WithExec([]string{"sh", "-c", "grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
+		WithExec([]string{"tar", "--extract", "--file", tarballName})
 
 	file := container.File("hugo")
 
@@ -97,7 +98,7 @@ func (hugo *Hugo) Overlay(
 	// Filesystem prefix under which to install Hugo
 	// +optional
 	prefix string,
-) *Directory {
+) *dagger.Directory {
 	if prefix == "" {
 		prefix = "/usr/local"
 	}
@@ -113,8 +114,8 @@ func (hugo *Hugo) Overlay(
 // Install Hugo in a container
 func (hugo *Hugo) Installation(
 	// Container in which to install Hugo
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		WithDirectory("/", hugo.Overlay("")).
 		WithMountedCache(CacheDir, dag.CacheVolume("hugo")).
@@ -126,8 +127,8 @@ func (hugo *Hugo) Installation(
 // Get a Hugo container from a base container
 func (hugo *Hugo) Container(
 	// Base container
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(hugo.Installation).
 		WithEntrypoint([]string{"hugo"}).
@@ -138,7 +139,7 @@ func (hugo *Hugo) Container(
 }
 
 // Get a Red Hat Universal Base Image container with Hugo
-func (hugo *Hugo) RedhatContainer() *Container {
+func (hugo *Hugo) RedhatContainer() *dagger.Container {
 	container := hugo.Container(
 		dag.Redhat().Container().
 			With(dag.Golang().RedhatInstallation),
@@ -148,7 +149,7 @@ func (hugo *Hugo) RedhatContainer() *Container {
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Hugo
-func (hugo *Hugo) RedhatMinimalContainer() *Container {
+func (hugo *Hugo) RedhatMinimalContainer() *dagger.Container {
 	container := hugo.Container(
 		dag.Redhat().Minimal().Container().
 			With(dag.Golang().RedhatMinimalInstallation),
@@ -160,7 +161,7 @@ func (hugo *Hugo) RedhatMinimalContainer() *Container {
 // Get a Red Hat Micro Universal Base Image container with Hugo
 //
 // Hugo extended edition and Hugo modules cannot be used.
-func (hugo *Hugo) RedhatMicroContainer() *Container {
+func (hugo *Hugo) RedhatMicroContainer() *dagger.Container {
 	container := hugo.Container(dag.Redhat().Micro().Container())
 
 	return container
