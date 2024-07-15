@@ -7,6 +7,10 @@
 
 package main
 
+import (
+	"dagger/nodejs/internal/dagger"
+)
+
 const (
 	// Location of npm cache
 	CacheDir string = "/var/cache/node"
@@ -15,14 +19,14 @@ const (
 // Node.js
 type Nodejs struct {
 	// +private
-	Npmrc *Secret
+	Npmrc *dagger.Secret
 }
 
 // Node.js constructor
 func New(
 	// npm configuration file (can be used to pass registry credentials)
 	// +optional
-	npmrc *Secret,
+	npmrc *dagger.Secret,
 ) *Nodejs {
 	nodejs := &Nodejs{
 		Npmrc: npmrc,
@@ -34,8 +38,8 @@ func New(
 // Configure Node.js in a container
 func (nodejs *Nodejs) Configuration(
 	// Container in which to configure Node.js
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		WithMountedCache(CacheDir, dag.CacheVolume("nodejs")).
 		WithEnvVariable("NPM_CONFIG_CACHE", CacheDir+"/npm")
@@ -51,8 +55,8 @@ func (nodejs *Nodejs) Configuration(
 // Install Node.js in a Red Hat Universal Base Image container from packages
 func (nodejs *Nodejs) RedhatInstallation(
 	// Container in which to install Node.js
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(dag.Redhat().Module("nodejs:20").Enabled).
 		With(dag.Redhat().Packages([]string{
@@ -64,15 +68,15 @@ func (nodejs *Nodejs) RedhatInstallation(
 }
 
 // Get a Red Hat Universal Base Image container with Node.js
-func (nodejs *Nodejs) RedhatContainer() *Container {
+func (nodejs *Nodejs) RedhatContainer() *dagger.Container {
 	return dag.Redhat().Container().With(nodejs.RedhatInstallation)
 }
 
 // Install Node.js in a Red Hat Minimal Universal Base Image container from packages
 func (nodejs *Nodejs) RedhatMinimalInstallation(
 	// Container in which to install Node.js
-	container *Container,
-) *Container {
+	container *dagger.Container,
+) *dagger.Container {
 	container = container.
 		With(dag.Redhat().Minimal().Module("nodejs:20").Enabled).
 		With(dag.Redhat().Minimal().Packages([]string{
@@ -84,6 +88,6 @@ func (nodejs *Nodejs) RedhatMinimalInstallation(
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Node.js
-func (nodejs *Nodejs) RedhatMinimalContainer() *Container {
+func (nodejs *Nodejs) RedhatMinimalContainer() *dagger.Container {
 	return dag.Redhat().Minimal().Container().With(nodejs.RedhatMinimalInstallation)
 }
