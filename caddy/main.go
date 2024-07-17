@@ -47,6 +47,9 @@ func (caddy *Caddy) Container(
 	// Platform to get container for
 	// +optional
 	platform dagger.Platform,
+	// Mount the directory containing the static content instead of copying it.
+	// +optional
+	mountDirectory bool,
 ) *dagger.Container {
 	caddyfile := dag.CurrentModule().Source().File("Caddyfile")
 
@@ -56,8 +59,17 @@ func (caddy *Caddy) Container(
 		WithExec([]string{"chown", "65535:65535", "/data/caddy"}).
 		WithEntrypoint([]string{"caddy"}).
 		WithDefaultArgs([]string{"run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"}).
-		WithFile("/etc/caddy/Caddyfile", caddyfile).
-		WithMountedDirectory("/usr/share/caddy", caddy.Directory).
+		WithFile("/etc/caddy/Caddyfile", caddyfile)
+
+	if mountDirectory {
+		container = container.
+			WithMountedDirectory("/usr/share/caddy", caddy.Directory)
+	} else {
+		container = container.
+			WithDirectory("/usr/share/caddy", caddy.Directory)
+	}
+
+	container = container.
 		WithUser("65535").
 		WithExposedPort(8080)
 
@@ -68,5 +80,5 @@ func (caddy *Caddy) Container(
 //
 // See `container()` for details.
 func (caddy *Caddy) Server() *dagger.Service {
-	return caddy.Container("").WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
+	return caddy.Container("", true).WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
 }
