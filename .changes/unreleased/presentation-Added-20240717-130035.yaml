@@ -1,4 +1,0 @@
-project: presentation
-kind: Added
-body: Added support to build a container image for a different platform than the engine one.
-time: 2024-07-17T13:00:35.934795726+02:00
