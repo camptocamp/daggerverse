@@ -1,4 +1,0 @@
-project: caddy
-kind: Added
-body: Added support for copying static content directory to container image instead of mounting it.
-time: 2024-07-17T12:17:01.600038399+02:00
