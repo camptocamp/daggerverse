@@ -1,0 +1,4 @@
+project: documentation
+kind: Added
+body: Added support to build a container image for a different platform than the engine one.
+time: 2024-07-17T12:48:15.925841428+02:00
