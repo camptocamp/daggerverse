@@ -1,0 +1,4 @@
+project: caddy
+kind: Added
+body: Added support to get a container image for a different platform than the engine one.
+time: 2024-07-17T12:11:33.764467656+02:00

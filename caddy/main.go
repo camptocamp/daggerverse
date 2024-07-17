@@ -43,10 +43,14 @@ func New(
 // Get a Caddy container ready to serve the static content
 //
 // Static content is mounted under `/usr/share/caddy` and container exposes port 8080.
-func (caddy *Caddy) Container() *dagger.Container {
+func (caddy *Caddy) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
 	caddyfile := dag.CurrentModule().Source().File("Caddyfile")
 
-	container := dag.Container().
+	container := dag.Container(dagger.ContainerOpts{Platform: platform}).
 		From(ImageRegistry+"/"+ImageRepository+":"+ImageTag+"@"+ImageDigest).
 		WithExec([]string{"chown", "65535:65535", "/config/caddy"}).
 		WithExec([]string{"chown", "65535:65535", "/data/caddy"}).
@@ -64,5 +68,5 @@ func (caddy *Caddy) Container() *dagger.Container {
 //
 // See `container()` for details.
 func (caddy *Caddy) Server() *dagger.Service {
-	return caddy.Container().WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
+	return caddy.Container("").WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
 }
