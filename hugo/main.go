@@ -10,6 +10,7 @@ package main
 import (
 	"context"
 	"dagger/hugo/internal/dagger"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -25,48 +26,46 @@ type Hugo struct {
 	Version string
 	// +private
 	Extended bool
-	// +private
-	Platform dagger.Platform
 }
 
 // Hugo constructor
 func New(
-	ctx context.Context,
 	// Hugo version to get
 	version string,
 	// Hugo edition to get
 	// +optional
 	// +default=true
 	extended bool,
-	// Platform to get Hugo for
-	// +optional
-	platform dagger.Platform,
 ) (*Hugo, error) {
-	if platform == "" {
-		defaultPlatform, err := dag.DefaultPlatform(ctx)
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to get platform: %w", err)
-		}
-
-		platform = defaultPlatform
-	}
-
 	hugo := &Hugo{
 		Version:  version,
 		Extended: extended,
-		Platform: platform,
 	}
 
 	return hugo, nil
 }
 
 // Get Hugo executable binary
-func (hugo *Hugo) Binary() *dagger.File {
-	platform := strings.Split(string(hugo.Platform), "/")
+func (hugo *Hugo) Binary(
+	ctx context.Context,
+	// Platform to get Hugo for
+	// +optional
+	platform dagger.Platform,
+) (*dagger.File, error) {
+	if platform == "" {
+		defaultPlatform, err := dag.DefaultPlatform(ctx)
 
-	os := platform[0]
-	arch := platform[1]
+		if err != nil {
+			return nil, fmt.Errorf("failed to get platform: %s", err)
+		}
+
+		platform = defaultPlatform
+	}
+
+	platformElements := strings.Split(string(platform), "/")
+
+	os := platformElements[0]
+	arch := platformElements[1]
 
 	downloadURL := "https://github.com/gohugoio/hugo/releases/download/v" + hugo.Version
 
@@ -88,81 +87,125 @@ func (hugo *Hugo) Binary() *dagger.File {
 		WithExec([]string{"sh", "-c", "grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
 		WithExec([]string{"tar", "--extract", "--file", tarballName})
 
-	file := container.File("hugo")
+	binary := container.File("hugo")
 
-	return file
+	return binary, nil
 }
 
 // Get a root filesystem overlay with Hugo
 func (hugo *Hugo) Overlay(
+	ctx context.Context,
+	// Platform to get Hugo for
+	// +optional
+	platform dagger.Platform,
 	// Filesystem prefix under which to install Hugo
 	// +optional
 	prefix string,
-) *dagger.Directory {
+) (*dagger.Directory, error) {
 	if prefix == "" {
 		prefix = "/usr/local"
 	}
 
-	directory := dag.Directory().
+	binary, err := hugo.Binary(ctx, platform)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get Hugo binary: %s", err)
+	}
+
+	overlay := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
-			WithFile("bin/hugo", hugo.Binary()),
+			WithFile("bin/hugo", binary),
 		)
 
-	return directory
+	return overlay, nil
 }
 
 // Install Hugo in a container
 func (hugo *Hugo) Installation(
+	ctx context.Context,
 	// Container in which to install Hugo
 	container *dagger.Container,
-) *dagger.Container {
+) (*dagger.Container, error) {
+	platform, err := container.Platform(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get container platform: %s", err)
+	}
+
+	overlay, err := hugo.Overlay(ctx, platform, "")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get Hugo overlay: %s", err)
+	}
+
 	container = container.
-		WithDirectory("/", hugo.Overlay("")).
+		WithDirectory("/", overlay).
 		WithMountedCache(CacheDir, dag.CacheVolume("hugo")).
 		WithEnvVariable("HUGO_CACHEDIR", CacheDir)
 
-	return container
+	return container, nil
 }
 
 // Get a Hugo container from a base container
 func (hugo *Hugo) Container(
+	ctx context.Context,
 	// Base container
 	container *dagger.Container,
-) *dagger.Container {
+) (*dagger.Container, error) {
+	container, err := hugo.Installation(ctx, container)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to install Hugo: %s", err)
+	}
+
 	container = container.
-		With(hugo.Installation).
 		WithEntrypoint([]string{"hugo"}).
 		WithoutDefaultArgs().
 		WithExposedPort(1313)
 
-	return container
+	return container, nil
 }
 
 // Get a Red Hat Universal Base Image container with Hugo
-func (hugo *Hugo) RedhatContainer() *dagger.Container {
-	container := hugo.Container(
-		dag.Redhat().Container().
-			With(dag.Golang().RedhatInstallation),
-	)
+func (hugo *Hugo) RedhatContainer(
+	ctx context.Context,
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) (*dagger.Container, error) {
+	container := dag.Redhat().Container(dagger.RedhatContainerOpts{Platform: platform}).
+		With(dag.Golang().RedhatInstallation)
 
-	return container
+	return hugo.Container(ctx, container)
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Hugo
-func (hugo *Hugo) RedhatMinimalContainer() *dagger.Container {
-	container := hugo.Container(
-		dag.Redhat().Minimal().Container().
-			With(dag.Golang().RedhatMinimalInstallation),
-	)
+func (hugo *Hugo) RedhatMinimalContainer(
+	ctx context.Context,
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) (*dagger.Container, error) {
+	container := dag.Redhat().Minimal().Container(dagger.RedhatMinimalContainerOpts{Platform: platform}).
+		With(dag.Golang().RedhatMinimalInstallation)
 
-	return container
+	return hugo.Container(ctx, container)
 }
 
 // Get a Red Hat Micro Universal Base Image container with Hugo
 //
 // Hugo extended edition and Hugo modules cannot be used.
-func (hugo *Hugo) RedhatMicroContainer() *dagger.Container {
-	container := hugo.Container(dag.Redhat().Micro().Container())
+func (hugo *Hugo) RedhatMicroContainer(
+	ctx context.Context,
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) (*dagger.Container, error) {
+	if hugo.Extended {
+		return nil, errors.New("extended version is not compatible with Red Hat micro container")
+	}
 
-	return container
+	container := dag.Redhat().Micro().Container(dagger.RedhatMicroContainerOpts{Platform: platform})
+
+	return hugo.Container(ctx, container)
 }
