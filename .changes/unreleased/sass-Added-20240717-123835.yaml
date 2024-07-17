@@ -1,4 +1,0 @@
-project: sass
-kind: Added
-body: Added support to get container images for a different platform than the engine one.
-time: 2024-07-17T12:38:35.851196429+02:00
