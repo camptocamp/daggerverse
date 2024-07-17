@@ -33,8 +33,12 @@ func New() *Kroki {
 // Get a Kroki container ready to create diagrams
 //
 // Container exposes port 8080.
-func (*Kroki) Container() *dagger.Container {
-	container := dag.Container().
+func (*Kroki) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	container := dag.Container(dagger.ContainerOpts{Platform: platform}).
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
 		WithExposedPort(8000)
 
@@ -45,5 +49,5 @@ func (*Kroki) Container() *dagger.Container {
 //
 // See `container()` for details.
 func (kroki *Kroki) Server() *dagger.Service {
-	return kroki.Container().AsService()
+	return kroki.Container("").AsService()
 }

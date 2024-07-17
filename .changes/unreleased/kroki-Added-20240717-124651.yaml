@@ -1,0 +1,4 @@
+project: kroki
+kind: Added
+body: Added support to get a container image for a different platform than the engine one.
+time: 2024-07-17T12:46:51.178557095+02:00
