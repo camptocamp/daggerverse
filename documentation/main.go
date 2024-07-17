@@ -65,7 +65,7 @@ func (*Documentation) Builder(
 	builder.Container = dag.Redhat().Minimal().Container().
 		With(dag.Nodejs().RedhatMinimalInstallation).
 		With(dag.Golang().RedhatMinimalInstallation).
-		With(dag.Hugo(configuration.Hugo.Version).Installation).
+		With(dag.Hugo(configuration.Hugo.Version, dagger.HugoOpts{Extended: true}).Installation).
 		WithServiceBinding("kroki", kroki.Server()).
 		WithMountedDirectory(".", directory).
 		WithExec([]string{"npm", "clean-install"}).
