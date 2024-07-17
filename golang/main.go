@@ -53,8 +53,12 @@ func (golang *Golang) RedhatInstallation(
 }
 
 // Get a Red Hat Universal Base Image container with Go
-func (golang *Golang) RedhatContainer() *dagger.Container {
-	return dag.Redhat().Container().With(golang.RedhatInstallation)
+func (golang *Golang) RedhatContainer(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	return dag.Redhat().Container(dagger.RedhatContainerOpts{Platform: platform}).With(golang.RedhatInstallation)
 }
 
 // Install Go in a Red Hat Minimal Universal Base Image container from packages
@@ -73,6 +77,10 @@ func (golang *Golang) RedhatMinimalInstallation(
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Go
-func (golang *Golang) RedhatMinimalContainer() *dagger.Container {
-	return dag.Redhat().Minimal().Container().With(golang.RedhatMinimalInstallation)
+func (golang *Golang) RedhatMinimalContainer(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	return dag.Redhat().Minimal().Container(dagger.RedhatMinimalContainerOpts{Platform: platform}).With(golang.RedhatMinimalInstallation)
 }
