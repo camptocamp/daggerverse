@@ -34,7 +34,6 @@ func New(
 	version string,
 	// Hugo edition to get
 	// +optional
-	// +default=true
 	extended bool,
 ) (*Hugo, error) {
 	hugo := &Hugo{
