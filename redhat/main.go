@@ -47,8 +47,12 @@ func New() *Redhat {
 }
 
 // Get a Red Hat Universal Base Image container
-func (*Redhat) Container() *dagger.Container {
-	container := dag.Container().
+func (*Redhat) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	container := dag.Container(dagger.ContainerOpts{Platform: platform}).
 		From(ImageRegistry + "/" + ImageRepository + ":" + ImageTag + "@" + ImageDigest).
 		WithWorkdir("/home")
 
@@ -127,7 +131,7 @@ func (packages *RedhatPackages) Removed(
 func (redhat *Redhat) CaCertificates() *dagger.Directory {
 	const installroot string = "/tmp/rootfs"
 
-	caCertificates := redhat.Container().
+	caCertificates := redhat.Container("").
 		WithExec([]string{"sh", "-c", "mkdir " + installroot + " && dnf --installroot " + installroot + " install --nodocs --setopt install_weak_deps=0 --assumeyes ca-certificates && dnf --installroot " + installroot + " clean all"}).
 		Directory(installroot + "/etc/pki/ca-trust")
 
@@ -143,8 +147,12 @@ func (*Redhat) Minimal() *RedhatMinimal {
 }
 
 // Get a Red Hat Minimal Universal Base Image container
-func (*RedhatMinimal) Container() *dagger.Container {
-	container := dag.Container().
+func (*RedhatMinimal) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	container := dag.Container(dagger.ContainerOpts{Platform: platform}).
 		From(ImageRegistry + "/" + MinimalImageRepository + ":" + MinimalImageTag + "@" + MinimalImageDigest).
 		WithWorkdir("/home")
 
@@ -228,8 +236,12 @@ func (*Redhat) Micro() *RedhatMicro {
 }
 
 // Get a Red Hat Micro Universal Base Image container
-func (*RedhatMicro) Container() *dagger.Container {
-	container := dag.Container().
+func (*RedhatMicro) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	container := dag.Container(dagger.ContainerOpts{Platform: platform}).
 		From(ImageRegistry + "/" + MicroImageRepository + ":" + MicroImageTag + "@" + MicroImageDigest).
 		WithWorkdir("/home")
 
