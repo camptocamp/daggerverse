@@ -87,8 +87,12 @@ func (builder *PresentationBuilder) Build() *PresentationBuildResult {
 // Get a container ready to serve the presentation
 //
 // Container exposes port 8080.
-func (build *PresentationBuildResult) Container() *dagger.Container {
-	return dag.Caddy(build.Directory).Container()
+func (build *PresentationBuildResult) Container(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	return dag.Caddy(build.Directory).Container(dagger.CaddyContainerOpts{Platform: platform})
 }
 
 // Get a service serving the presentation
