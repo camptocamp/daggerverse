@@ -68,8 +68,12 @@ func (nodejs *Nodejs) RedhatInstallation(
 }
 
 // Get a Red Hat Universal Base Image container with Node.js
-func (nodejs *Nodejs) RedhatContainer() *dagger.Container {
-	return dag.Redhat().Container().With(nodejs.RedhatInstallation)
+func (nodejs *Nodejs) RedhatContainer(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	return dag.Redhat().Container(dagger.RedhatContainerOpts{Platform: platform}).With(nodejs.RedhatInstallation)
 }
 
 // Install Node.js in a Red Hat Minimal Universal Base Image container from packages
@@ -88,6 +92,10 @@ func (nodejs *Nodejs) RedhatMinimalInstallation(
 }
 
 // Get a Red Hat Minimal Universal Base Image container with Node.js
-func (nodejs *Nodejs) RedhatMinimalContainer() *dagger.Container {
-	return dag.Redhat().Minimal().Container().With(nodejs.RedhatMinimalInstallation)
+func (nodejs *Nodejs) RedhatMinimalContainer(
+	// Platform to get container for
+	// +optional
+	platform dagger.Platform,
+) *dagger.Container {
+	return dag.Redhat().Minimal().Container(dagger.RedhatMinimalContainerOpts{Platform: platform}).With(nodejs.RedhatMinimalInstallation)
 }
