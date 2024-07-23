@@ -14,6 +14,11 @@ import (
 	"strings"
 )
 
+const (
+	// Name of jq executable binary
+	BinaryName string = "jq"
+)
+
 // jq
 type Jq struct {
 	// +private
@@ -68,14 +73,12 @@ func (jq *Jq) Binary(
 	checksums := dag.HTTP(downloadURL + "/" + checksumsName)
 
 	container := dag.Redhat().Container().
-		WithFile(binaryName, binary, dagger.ContainerWithFileOpts{
-			Permissions: 0755,
-		}).
+		WithMountedFile(binaryName, binary).
 		WithMountedFile(checksumsName, checksums).
-		WithExec([]string{"sh", "-c", "grep -w " + binaryName + " " + checksumsName + " | sha256sum -c"})
+		WithExec([]string{"sh", "-c", "grep -w " + binaryName + " " + checksumsName + " | sha256sum -c"}).
+		WithExec([]string{"chmod", "a+x", binaryName})
 
-	binary = container.
-		File(binaryName)
+	binary = container.File(binaryName)
 
 	return binary, nil
 }
@@ -102,7 +105,9 @@ func (jq *Jq) Overlay(
 
 	overlay := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
-			WithFile("bin/jq", binary),
+			WithDirectory("bin", dag.Directory().
+				WithFile(BinaryName, binary),
+			),
 		)
 
 	return overlay, nil
@@ -145,7 +150,7 @@ func (jq *Jq) Container(
 	}
 
 	container = container.
-		WithEntrypoint([]string{"jq"}).
+		WithEntrypoint([]string{BinaryName}).
 		WithoutDefaultArgs()
 
 	return container, nil
