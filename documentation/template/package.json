@@ -8,7 +8,7 @@
     "postcss-cli": "^11.0.0"
   },
   "hugo": {
-    "version": "0.124.1"
+    "version": "0.129.0"
   },
   "scripts": {
     "hugo": "hugo",
