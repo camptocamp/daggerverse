@@ -14,6 +14,11 @@ import (
 	"strings"
 )
 
+const (
+	// Name of Sass executable binary
+	BinaryName string = "sass"
+)
+
 // Sass
 type Sass struct {
 	// +private
@@ -24,12 +29,12 @@ type Sass struct {
 func New(
 	// Sass version to get
 	version string,
-) (*Sass, error) {
+) *Sass {
 	sass := &Sass{
 		Version: version,
 	}
 
-	return sass, nil
+	return sass
 }
 
 // Get Sass binaries (Dart runtime and Sass snapshot)
@@ -98,8 +103,12 @@ func (sass *Sass) Overlay(
 
 	overlay := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
-			WithDirectory("libexec/sass", binaries).
-			WithFile("bin/sass", dag.CurrentModule().Source().File("bin/sass"), dagger.DirectoryWithFileOpts{Permissions: 0o755}),
+			WithDirectory("libexec", dag.Directory().
+				WithDirectory(BinaryName, binaries),
+			).
+			WithDirectory("bin", dag.Directory().
+				WithFile(BinaryName, dag.CurrentModule().Source().File("bin/"+BinaryName), dagger.DirectoryWithFileOpts{Permissions: 0o755}),
+			),
 		)
 
 	return overlay, nil
@@ -142,7 +151,7 @@ func (sass *Sass) Container(
 	}
 
 	container = container.
-		WithEntrypoint([]string{"sass"}).
+		WithEntrypoint([]string{BinaryName}).
 		WithoutDefaultArgs()
 
 	return container, nil
