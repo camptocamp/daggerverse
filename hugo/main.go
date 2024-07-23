@@ -16,6 +16,9 @@ import (
 )
 
 const (
+	// Name of Hugo executable binary
+	BinaryName string = "hugo"
+
 	// Location of Hugo cache
 	CacheDir string = "/var/cache/hugo"
 )
@@ -35,13 +38,13 @@ func New(
 	// Hugo edition to get
 	// +optional
 	extended bool,
-) (*Hugo, error) {
+) *Hugo {
 	hugo := &Hugo{
 		Version:  version,
 		Extended: extended,
 	}
 
-	return hugo, nil
+	return hugo
 }
 
 // Get Hugo executable binary
@@ -86,7 +89,7 @@ func (hugo *Hugo) Binary(
 		WithExec([]string{"sh", "-c", "grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
 		WithExec([]string{"tar", "--extract", "--file", tarballName})
 
-	binary := container.File("hugo")
+	binary := container.File(BinaryName)
 
 	return binary, nil
 }
@@ -113,7 +116,9 @@ func (hugo *Hugo) Overlay(
 
 	overlay := dag.Directory().
 		WithDirectory(prefix, dag.Directory().
-			WithFile("bin/hugo", binary),
+			WithDirectory("bin", dag.Directory().
+				WithFile(BinaryName, binary),
+			),
 		)
 
 	return overlay, nil
@@ -158,7 +163,7 @@ func (hugo *Hugo) Container(
 	}
 
 	container = container.
-		WithEntrypoint([]string{"hugo"}).
+		WithEntrypoint([]string{BinaryName}).
 		WithoutDefaultArgs().
 		WithExposedPort(1313)
 
