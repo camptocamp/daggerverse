@@ -40,6 +40,8 @@ projects:
     changelog: "nodejs/CHANGELOG.md"
   - key: "caddy"
     changelog: "caddy/CHANGELOG.md"
+  - key: "github"
+    changelog: "github/CHANGELOG.md"
   - key: "jq"
     changelog: "jq/CHANGELOG.md"
   - key: "hugo"

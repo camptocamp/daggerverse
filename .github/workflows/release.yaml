@@ -12,6 +12,7 @@ on:
           - "golang"
           - "nodejs"
           - "caddy"
+          - "github"
           - "jq"
           - "hugo"
           - "sass"
