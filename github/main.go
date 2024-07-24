@@ -182,7 +182,10 @@ func (github *Github) RedhatContainer(
 	// +optional
 	platform dagger.Platform,
 ) (*dagger.Container, error) {
-	container := dag.Redhat().Container(dagger.RedhatContainerOpts{Platform: platform})
+	container := dag.Redhat().Container(dagger.RedhatContainerOpts{Platform: platform}).
+		With(dag.Redhat().Packages([]string{
+			"git",
+		}).Installed)
 
 	return github.Container(ctx, container)
 }
@@ -194,12 +197,17 @@ func (github *Github) RedhatMinimalContainer(
 	// +optional
 	platform dagger.Platform,
 ) (*dagger.Container, error) {
-	container := dag.Redhat().Minimal().Container(dagger.RedhatMinimalContainerOpts{Platform: platform})
+	container := dag.Redhat().Minimal().Container(dagger.RedhatMinimalContainerOpts{Platform: platform}).
+		With(dag.Redhat().Minimal().Packages([]string{
+			"git",
+		}).Installed)
 
 	return github.Container(ctx, container)
 }
 
 // Get a Red Hat Micro Universal Base Image container with GitHub
+//
+// Features requiring Git will not work.
 func (github *Github) RedhatMicroContainer(
 	ctx context.Context,
 	// Platform to get container for
