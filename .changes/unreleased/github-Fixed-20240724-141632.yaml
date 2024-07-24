@@ -1,4 +1,0 @@
-project: github
-kind: Fixed
-body: Added missing dependency to Red Hat and Red Hat minimal containers.
-time: 2024-07-24T14:16:32.207505845+02:00
