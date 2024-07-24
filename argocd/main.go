@@ -25,6 +25,7 @@ type Argocd struct {
 	Version string
 }
 
+// Argo CD constructor
 func New(
 	// Argo CD version to get
 	version string,
