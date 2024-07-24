@@ -56,23 +56,28 @@ func (sass *Sass) Binaries(
 
 	platformElements := strings.Split(string(platform), "/")
 
-	os := platformElements[0]
+	os := map[string]string{
+		"linux":  "linux",
+		"darwin": "macos",
+	}[platformElements[0]]
+
 	arch := map[string]string{
-		"amd64": "x64",
-		"386":   "ia32",
-		"arm":   "arm",
-		"arm64": "arm64",
+		"amd64":   "x64",
+		"386":     "ia32",
+		"arm":     "arm",
+		"arm64":   "arm64",
+		"riscv64": "riscv64",
 	}[platformElements[1]]
 
 	downloadURL := "https://github.com/sass/dart-sass/releases/download/" + sass.Version
 
-	tarballName := fmt.Sprintf("dart-sass-%s-%s-%s.tar.gz", sass.Version, os, arch)
+	archiveName := fmt.Sprintf("dart-sass-%s-%s-%s.tar.gz", sass.Version, os, arch)
 
-	tarball := dag.HTTP(downloadURL + "/" + tarballName)
+	archive := dag.HTTP(downloadURL + "/" + archiveName)
 
 	container := dag.Redhat().Container().
-		WithMountedFile("sass.tar.gz", tarball).
-		WithExec([]string{"tar", "--extract", "--strip-components", "1", "--file", "sass.tar.gz"})
+		WithMountedFile(archiveName, archive).
+		WithExec([]string{"tar", "--extract", "--strip-components", "1", "--file", archiveName})
 
 	binaries := dag.Directory().
 		WithFile("dart", container.File("src/dart")).
