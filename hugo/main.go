@@ -69,25 +69,29 @@ func (hugo *Hugo) Binary(
 	os := platformElements[0]
 	arch := platformElements[1]
 
-	downloadURL := "https://github.com/gohugoio/hugo/releases/download/v" + hugo.Version
-
-	tarballBaseName := "hugo"
-
-	if hugo.Extended {
-		tarballBaseName += "_extended"
+	if os == "darwin" {
+		arch = "universal"
 	}
 
-	tarballName := fmt.Sprintf("%s_%s_%s-%s.tar.gz", tarballBaseName, hugo.Version, os, arch)
+	downloadURL := "https://github.com/gohugoio/hugo/releases/download/v" + hugo.Version
+
+	archiveBaseName := "hugo"
+
+	if hugo.Extended {
+		archiveBaseName += "_extended"
+	}
+
+	archiveName := fmt.Sprintf("%s_%s_%s-%s.tar.gz", archiveBaseName, hugo.Version, os, arch)
 	checksumsName := fmt.Sprintf("hugo_%s_checksums.txt", hugo.Version)
 
-	tarball := dag.HTTP(downloadURL + "/" + tarballName)
+	archive := dag.HTTP(downloadURL + "/" + archiveName)
 	checksums := dag.HTTP(downloadURL + "/" + checksumsName)
 
 	container := dag.Redhat().Container().
-		WithMountedFile(tarballName, tarball).
+		WithMountedFile(archiveName, archive).
 		WithMountedFile(checksumsName, checksums).
-		WithExec([]string{"sh", "-c", "grep -w " + tarballName + " " + checksumsName + " | sha256sum -c"}).
-		WithExec([]string{"tar", "--extract", "--file", tarballName})
+		WithExec([]string{"sh", "-c", "grep -w " + archiveName + " " + checksumsName + " | sha256sum -c"}).
+		WithExec([]string{"tar", "--extract", "--file", archiveName})
 
 	binary := container.File(BinaryName)
 
