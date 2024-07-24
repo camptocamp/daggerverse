@@ -56,8 +56,19 @@ func (jq *Jq) Binary(
 
 	platformElements := strings.Split(string(platform), "/")
 
-	os := platformElements[0]
-	arch := platformElements[1]
+	os := map[string]string{
+		"linux":   "linux",
+		"darwin":  "macos",
+		"windows": "windows",
+	}[platformElements[0]]
+
+	arch := map[string]string{
+		"amd64":   "amd64",
+		"386":     "i386",
+		"arm":     "armhf",
+		"arm64":   "arm64",
+		"riscv64": "riscv64",
+	}[platformElements[1]]
 
 	downloadURL := "https://github.com/jqlang/jq/releases/download/jq-" + jq.Version
 

@@ -1,0 +1,4 @@
+project: jq
+kind: Fixed
+body: Added support for more platforms.
+time: 2024-07-24T12:12:47.054880478+02:00
