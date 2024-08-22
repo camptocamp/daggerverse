@@ -43,7 +43,7 @@ Install [Dagger].
 Execute the following command to build the presentation:
 
 ```shell
-dagger call -m presentation builder --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' build --output 'dist'
+dagger call -m presentation builder --directory '.' --npmrc 'cmd:echo //npm.pkg.github.com/:_authToken=$(gh auth token)' build directory --output 'dist'
 ```
 
 To preview the presentation, execute the following command, then visit [localhost:8080](http://localhost:8080):
