@@ -17,9 +17,9 @@ const (
 	// Kroki container image repository
 	ImageRepository string = "yuzutech/kroki"
 	// Kroki container image tag
-	ImageTag string = "0.25.0"
+	ImageTag string = "0.26.0"
 	// Kroki container image digest
-	ImageDigest string = "sha256:a9db3ab74543b84d641d5ff32272ffd4c6a21126ea6a529248bf276367c14273"
+	ImageDigest string = "sha256:98944c784993dd6b41d739be7f84e046d118f87fb81aec55cfbdf4e68a598bcf"
 )
 
 // Kroki
