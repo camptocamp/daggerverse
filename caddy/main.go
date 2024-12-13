@@ -80,5 +80,5 @@ func (caddy *Caddy) Container(
 //
 // See `container()` for details.
 func (caddy *Caddy) Server() *dagger.Service {
-	return caddy.Container("", true).WithExec(nil, dagger.ContainerWithExecOpts{UseEntrypoint: true}).AsService()
+	return caddy.Container("", true).AsService(dagger.ContainerAsServiceOpts{UseEntrypoint: true})
 }

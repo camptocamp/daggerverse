@@ -49,5 +49,5 @@ func (*Kroki) Container(
 //
 // See `container()` for details.
 func (kroki *Kroki) Server() *dagger.Service {
-	return kroki.Container("").AsService()
+	return kroki.Container("").AsService(dagger.ContainerAsServiceOpts{UseEntrypoint: true})
 }

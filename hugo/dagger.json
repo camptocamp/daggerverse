@@ -1,5 +1,6 @@
 {
   "name": "hugo",
+  "engineVersion": "v0.15.1",
   "sdk": "go",
   "dependencies": [
     {
@@ -11,6 +12,5 @@
       "source": "../redhat"
     }
   ],
-  "source": ".",
-  "engineVersion": "v0.12.5"
+  "source": "."
 }
