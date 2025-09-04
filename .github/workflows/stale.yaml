@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: "Mark and close"
         id: "stale"
-        uses: "actions/stale@v9"
+        uses: "actions/stale@v10"
         with:
           stale-pr-message: "Is it still relevant?"
           close-pr-message: "No activity, closing."
