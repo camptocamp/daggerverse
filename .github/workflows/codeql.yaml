@@ -46,7 +46,7 @@ jobs:
 
       - name: "Set up Dagger"
         id: "setup-dagger"
-        uses: "camptocamp/setup-dagger@v1"
+        uses: "camptocamp/setup-dagger@v2"
         with:
           module-path: "${{ matrix.modules.path }}"
 
