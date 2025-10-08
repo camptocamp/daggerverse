@@ -57,11 +57,11 @@ jobs:
 
       - name: "Initialize CodeQL"
         id: "init"
-        uses: "github/codeql-action/init@v3"
+        uses: "github/codeql-action/init@v4"
         with:
           source-root: "${{ matrix.modules.path }}"
           languages: "${{ matrix.modules.language }}"
 
       - name: "Perform CodeQL Analysis"
         id: "analyze"
-        uses: "github/codeql-action/analyze@v3"
+        uses: "github/codeql-action/analyze@v4"
