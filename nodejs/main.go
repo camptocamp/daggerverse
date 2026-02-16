@@ -58,7 +58,6 @@ func (nodejs *Nodejs) RedhatInstallation(
 	container *dagger.Container,
 ) *dagger.Container {
 	container = container.
-		With(dag.Redhat().Module("nodejs:20").Enabled).
 		With(dag.Redhat().Packages([]string{
 			"npm",
 		}).Installed).
@@ -82,7 +81,6 @@ func (nodejs *Nodejs) RedhatMinimalInstallation(
 	container *dagger.Container,
 ) *dagger.Container {
 	container = container.
-		With(dag.Redhat().Minimal().Module("nodejs:20").Enabled).
 		With(dag.Redhat().Minimal().Packages([]string{
 			"npm",
 		}).Installed).

@@ -17,25 +17,25 @@ const (
 	ImageRegistry string = "registry.access.redhat.com"
 
 	// Red Hat Universal Base Image container repository
-	ImageRepository string = "ubi9"
+	ImageRepository string = "ubi10"
 	// Red Hat Universal Base Image container tag
-	ImageTag string = "9.5-1732804088"
+	ImageTag string = "10.1-1770180700"
 	// Red Hat Universal Base Image container digest
-	ImageDigest string = "sha256:b632d0cc6263372a90e9097dcac0a369e456b144a66026b9eac029a22f0f6e07"
+	ImageDigest string = "sha256:b9e5730d0b6dba45e82c15fb8f49c6082e01cdcb5e4f6ba96535dab42a4d2cf0"
 
 	// Red Hat Minimal Universal Base Image container repository
-	MinimalImageRepository string = "ubi9-minimal"
+	MinimalImageRepository string = "ubi10-minimal"
 	// Red Hat Minimal Universal Base Image container tag
-	MinimalImageTag string = "9.5-1733767867"
+	MinimalImageTag string = "10.1-1770180557"
 	// Red Hat Minimal Universal Base Image container digest
-	MinimalImageDigest string = "sha256:f598528219a1be07cf520fbe82a2d2434dc9841e1f0a878382c8a13bf42cb486"
+	MinimalImageDigest string = "sha256:a74a7a92d3069bfac09c6882087771fc7db59fa9d8e16f14f4e012fe7288554c"
 
 	// Red Hat Micro Universal Base Image container repository
-	MicroImageRepository string = "ubi9-micro"
+	MicroImageRepository string = "ubi10-micro"
 	// Red Hat Micro Universal Base Image container tag
-	MicroImageTag string = "9.5-1733767087"
+	MicroImageTag string = "10.1-1769518576"
 	// Red Hat Micro Universal Base Image container digest
-	MicroImageDigest string = "sha256:3313e52bb1aad4017a0c35f9f2ae35cf8526eeeb83f6ecbec449ba9c5cb9cb07"
+	MicroImageDigest string = "sha256:551f8ee81be3dbabd45a9c197f3724b9724c1edb05d68d10bfe85a5c9e46a458"
 )
 
 // Red Hat Universal Base Image
@@ -57,40 +57,6 @@ func (*Redhat) Container(
 		WithWorkdir("/home")
 
 	return container
-}
-
-// Red Hat Universal Base Image module
-type RedhatModule struct {
-	// +private
-	Name string
-}
-
-// Red Hat Universal Base Image module constructor
-func (*Redhat) Module(
-	// Module name
-	name string,
-) *RedhatModule {
-	module := &RedhatModule{
-		Name: name,
-	}
-
-	return module
-}
-
-// Enable a module in a Red Hat Universal Base Image container
-func (module *RedhatModule) Enabled(
-	// Container in which to enable the module
-	container *dagger.Container,
-) *dagger.Container {
-	return container.WithExec([]string{"sh", "-c", "dnf module enable --assumeyes " + module.Name + " && dnf clean all"})
-}
-
-// Disable a module in a Red Hat Universal Base Image container
-func (module *RedhatModule) Disabled(
-	// Container in which to disable the module
-	container *dagger.Container,
-) *dagger.Container {
-	return container.WithExec([]string{"sh", "-c", "dnf module disable --assumeyes " + module.Name + " && dnf clean all"})
 }
 
 // Red Hat Universal Base Image packages
@@ -157,40 +123,6 @@ func (*RedhatMinimal) Container(
 		WithWorkdir("/home")
 
 	return container
-}
-
-// Red Hat Minimal Universal Base Image module
-type RedhatMinimalModule struct {
-	// +private
-	Name string
-}
-
-// Red Hat Minimal Universal Base Image module constructor
-func (*RedhatMinimal) Module(
-	// Module name
-	name string,
-) *RedhatMinimalModule {
-	module := &RedhatMinimalModule{
-		Name: name,
-	}
-
-	return module
-}
-
-// Enable a module in a Red Hat Minimal Universal Base Image container
-func (module *RedhatMinimalModule) Enabled(
-	// Container in which to enable the module
-	container *dagger.Container,
-) *dagger.Container {
-	return container.WithExec([]string{"sh", "-c", "microdnf module enable --assumeyes " + module.Name + " && microdnf clean all"})
-}
-
-// Disable a module in a Red Hat Minimal Universal Base Image container
-func (module *RedhatMinimalModule) Disabled(
-	// Container in which to disable the module
-	container *dagger.Container,
-) *dagger.Container {
-	return container.WithExec([]string{"sh", "-c", "microdnf module disable --assumeyes " + module.Name + " && microdnf clean all"})
 }
 
 // Red Hat Minimal Universal Base Image packages
