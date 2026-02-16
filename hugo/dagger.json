@@ -1,7 +1,9 @@
 {
   "name": "hugo",
-  "engineVersion": "v0.15.1",
-  "sdk": "go",
+  "engineVersion": "v0.19.11",
+  "sdk": {
+    "source": "go"
+  },
   "dependencies": [
     {
       "name": "golang",
@@ -12,5 +14,5 @@
       "source": "../redhat"
     }
   ],
-  "source": "."
+  "disableDefaultFunctionCaching": true
 }

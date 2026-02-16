@@ -1,7 +1,9 @@
 {
   "name": "documentation",
-  "engineVersion": "v0.15.1",
-  "sdk": "go",
+  "engineVersion": "v0.19.11",
+  "sdk": {
+    "source": "go"
+  },
   "dependencies": [
     {
       "name": "caddy",
@@ -28,5 +30,5 @@
       "source": "../redhat"
     }
   ],
-  "source": "."
+  "disableDefaultFunctionCaching": true
 }
