@@ -4,7 +4,7 @@
   "devDependencies": {
     "@asciidoctor/reveal.js": "^5.1.0",
     "@camptocamp/reveal.js": "^5.1.1001",
-    "@fortawesome/fontawesome-free": "^6.5.1",
+    "@fortawesome/fontawesome-free": "^7.2.0",
     "@highlightjs/cdn-assets": "^10.7.3",
     "asciidoctor": "^3.0.4",
     "asciidoctor-kroki": "^0.18.1",
