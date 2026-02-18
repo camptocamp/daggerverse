@@ -1,4 +1,0 @@
-project: jq
-kind: Fixed
-body: Enable back default function caching.
-time: 2026-02-18T12:16:20.378221091+01:00
