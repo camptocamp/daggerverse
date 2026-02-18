@@ -9,6 +9,5 @@
       "name": "redhat",
       "source": "../redhat"
     }
-  ],
-  "disableDefaultFunctionCaching": true
+  ]
 }

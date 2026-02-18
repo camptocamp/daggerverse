@@ -1,0 +1,4 @@
+project: argocd
+kind: Fixed
+body: Enable back default function caching.
+time: 2026-02-18T12:15:46.351397139+01:00

@@ -1,0 +1,4 @@
+project: golang
+kind: Fixed
+body: Enable back default function caching.
+time: 2026-02-18T12:16:11.894611852+01:00

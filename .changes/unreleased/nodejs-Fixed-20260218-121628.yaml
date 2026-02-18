@@ -1,0 +1,4 @@
+project: nodejs
+kind: Fixed
+body: Enable back default function caching.
+time: 2026-02-18T12:16:28.791882558+01:00
