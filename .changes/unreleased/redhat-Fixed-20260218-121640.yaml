@@ -1,4 +1,0 @@
-project: redhat
-kind: Fixed
-body: Enable back default function caching.
-time: 2026-02-18T12:16:40.003907673+01:00
