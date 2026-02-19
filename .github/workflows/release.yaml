@@ -16,6 +16,7 @@ on:
           - "jq"
           - "hugo"
           - "sass"
+          - "terraform"
           - "argocd"
           - "kroki"
           - "documentation"

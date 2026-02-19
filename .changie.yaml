@@ -48,6 +48,8 @@ projects:
     changelog: "hugo/CHANGELOG.md"
   - key: "sass"
     changelog: "sass/CHANGELOG.md"
+  - key: "terraform"
+    changelog: "terraform/CHANGELOG.md"
   - key: "argocd"
     changelog: "argocd/CHANGELOG.md"
   - key: "kroki"

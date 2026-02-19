@@ -32,6 +32,7 @@ jobs:
           - path: "jq"
           - path: "hugo"
           - path: "sass"
+          - path: "terraform"
           - path: "argocd"
           - path: "kroki"
           - path: "documentation"

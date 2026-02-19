@@ -1,0 +1,4 @@
+project: terraform
+kind: Fixed
+body: Fixed an odd issue with `plan show` and `plan apply` functions.
+time: 2026-02-24T17:28:52.874097672+01:00
