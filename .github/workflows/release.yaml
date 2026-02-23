@@ -23,6 +23,12 @@ on:
 
         required: true
 
+      version:
+        description: "Release version"
+        type: "string"
+
+        default: "auto"
+
 jobs:
   action:
     name: "Release Dagger module"
@@ -46,7 +52,7 @@ jobs:
         id: "batch"
         uses: "miniscruff/changie-action@v2"
         with:
-          args: "batch --project ${{ inputs.module }} auto"
+          args: "batch --project ${{ inputs.module }} ${{ inputs.version }}"
 
       - name: "Merge changes"
         id: "merge"
