@@ -93,15 +93,19 @@ func (packages *RedhatPackages) Removed(
 	return container.WithExec([]string{"sh", "-c", "dnf remove --assumeyes " + strings.Join(packages.Names, " ") + " && dnf clean all"})
 }
 
-// Get Red Hat Universal Base Image CA certificates
-func (redhat *Redhat) CaCertificates() *dagger.Directory {
+// Install Red Hat Universal Base Image CA certificates in a container
+func (redhat *Redhat) CaCertificates(
+	// Container in which to install the CA certificates
+	container *dagger.Container,
+) *dagger.Container {
 	const installroot string = "/tmp/rootfs"
+	const caCertificatesPath string = "/etc/pki/ca-trust/extracted"
 
 	caCertificates := redhat.Container("").
 		WithExec([]string{"sh", "-c", "mkdir " + installroot + " && dnf --installroot " + installroot + " install --nodocs --setopt install_weak_deps=0 --assumeyes ca-certificates && dnf --installroot " + installroot + " clean all"}).
-		Directory(installroot + "/etc/pki/ca-trust")
+		Directory(installroot + "/" + caCertificatesPath)
 
-	return caCertificates
+	return container.WithDirectory(caCertificatesPath, caCertificates)
 }
 
 // Red Hat Minimal Universal Base Image

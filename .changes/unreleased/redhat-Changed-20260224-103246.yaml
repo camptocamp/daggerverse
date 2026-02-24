@@ -1,0 +1,4 @@
+project: redhat
+kind: Changed
+body: Modify the function which gets Red Hat CA certificates to add these certificates to a container instead of returning a directory containing them.
+time: 2026-02-24T10:32:46.634132194+01:00
