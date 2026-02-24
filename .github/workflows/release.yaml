@@ -30,6 +30,11 @@ on:
 
         default: "auto"
 
+      initial:
+        description: "Initial release"
+        type: "boolean"
+
+        default: false
 jobs:
   action:
     name: "Release Dagger module"
@@ -51,6 +56,7 @@ jobs:
 
       - name: "Batch changes"
         id: "batch"
+        if: "inputs.initial == false"
         uses: "miniscruff/changie-action@v2"
         with:
           args: "batch --project ${{ inputs.module }} ${{ inputs.version }}"
