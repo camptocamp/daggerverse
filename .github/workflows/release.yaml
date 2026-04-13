@@ -57,19 +57,19 @@ jobs:
       - name: "Batch changes"
         id: "batch"
         if: "inputs.initial == false"
-        uses: "miniscruff/changie-action@v2"
+        uses: "miniscruff/changie-action@v3"
         with:
           args: "batch --project ${{ inputs.module }} ${{ inputs.version }}"
 
       - name: "Merge changes"
         id: "merge"
-        uses: "miniscruff/changie-action@v2"
+        uses: "miniscruff/changie-action@v3"
         with:
           args: "merge"
 
       - name: "Get version"
         id: "version"
-        uses: "miniscruff/changie-action@v2"
+        uses: "miniscruff/changie-action@v3"
         with:
           args: "latest --project ${{ inputs.module }} --remove-prefix"
 
